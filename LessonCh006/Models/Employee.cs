@@ -21,7 +21,7 @@ namespace Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("Имя работника не может быть пустым!!!");
+                    throw new ArgumentNullException("Имя сотрудника не может быть пустым!!!");
                 }
 
                 name = value;
@@ -35,7 +35,7 @@ namespace Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("Фамилия работника не может быть пустой!!!");
+                    throw new ArgumentNullException("Фамилия сотрудника не может быть пустой!!!");
                 }
 
                 surname = value;
@@ -49,7 +49,7 @@ namespace Models
             {
                 if (value < 18 && value > 99)
                 {
-                    throw new ArgumentException("Невозможный возраст работника!!!");
+                    throw new ArgumentException("Невозможный возраст сотрудника!!!");
                 }
 
                 age = value;
@@ -63,7 +63,7 @@ namespace Models
             {
                 if (value < 0)
                 {
-                    throw new ArgumentException("Невозможная зарплата работника!!!");
+                    throw new ArgumentException("Невозможная зарплата сотрудника!!!");
                 }
 
                 salary = value;
@@ -77,7 +77,7 @@ namespace Models
             {
                 if (string.IsNullOrWhiteSpace(value))
                 {
-                    throw new ArgumentNullException("Название должности работника не может быть пустым!!!");
+                    throw new ArgumentNullException("Название должности сотрудника не может быть пустым!!!");
                 }
 
                 jobTitle = value;
