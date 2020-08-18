@@ -1,7 +1,7 @@
 ﻿namespace Models
 {
     /// <summary>
-    /// Занимаемая должность сотрудника
+    /// Статус работника
     /// </summary>
     public enum EmployeePosition
     {

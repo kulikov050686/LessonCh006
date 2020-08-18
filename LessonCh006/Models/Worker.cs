@@ -13,7 +13,6 @@ namespace Models
         double salary;
         string jobTitle;
         string pathDepartment;        
-        EmployeePosition employeePosition;
                 
         public string Name
         {
@@ -85,6 +84,7 @@ namespace Models
                 jobTitle = value;
             }
         }
+        public EmployeePosition EmployeePosition { get; set; }
 
         /// <summary>
         /// Путь до департамента работника
@@ -103,20 +103,7 @@ namespace Models
                 pathDepartment = value;
             }
         }
-
-        /// <summary>
-        /// Занимаемая должность работника
-        /// </summary>
-        public EmployeePosition EmployeePosition
-        {
-            get => employeePosition;
-            
-            set
-            {
-                employeePosition = value;
-            }
-        }
-
+        
         /// <summary>
         /// Конструктор работник
         /// </summary>

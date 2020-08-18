@@ -29,5 +29,10 @@
         /// Название должности работника
         /// </summary>
         string JobTitle { get; set; }
+
+        /// <summary>
+        /// Статус работника
+        /// </summary>
+        EmployeePosition EmployeePosition { get; set; }
     }
 }

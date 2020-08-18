@@ -83,6 +83,7 @@ namespace Models
                 jobTitle = value;
             }
         }
+        public EmployeePosition EmployeePosition { get; set; }
 
         /// <summary>
         /// Конструктор руководителя
@@ -99,6 +100,7 @@ namespace Models
             Age = age;
             Salary = salary;
             JobTitle = jobTitle;
+            EmployeePosition = EmployeePosition.Supervisor;
         }
     }
 }

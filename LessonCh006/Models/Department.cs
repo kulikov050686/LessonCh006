@@ -29,19 +29,14 @@ namespace Models
         }
 
         /// <summary>
-        /// Начальник депертамента
+        /// Руководитель депертамента
         /// </summary>
-        public Supervisor Supervisor { get; set; }
-
-        /// <summary>
-        /// Лист стажёров департамента
-        /// </summary>
-        public BindingList<Intern> Interns { get; set; }
+        public Supervisor Supervisor { get; set; }       
 
         /// <summary>
         /// Лист сотрудников департамента
         /// </summary>
-        public BindingList<Employee> Employees { get; set; }
+        public BindingList<IWorker> Workers { get; set; }
 
         /// <summary>
         /// Лист поддепартаментов
@@ -62,34 +57,18 @@ namespace Models
 
                 return 0;
             }
-        }
-
-        /// <summary>
-        /// Количество стажёров в данном департаменте
-        /// </summary>
-        public int CountInterns
-        {
-            get
-            {
-                if(Interns != null)
-                {
-                    return Interns.Count;
-                }
-
-                return 0;
-            }
-        }
+        }        
 
         /// <summary>
         /// Количество работников в данном департаменте
         /// </summary>
-        public int CountEmployees
+        public int CountWorkers
         {
             get
             {
-                if(Employees != null)
+                if(Workers != null)
                 {
-                    return Employees.Count;
+                    return Workers.Count;
                 }
 
                 return 0;
