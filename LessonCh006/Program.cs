@@ -23,7 +23,7 @@ namespace LessonCh006
             ministry.AddDepartment("Департамент_4/Департамент_4_0/Департамент_4_0_0");
             ministry.AddDepartment("Департамент_4/Департамент_4_1/Департамент_4_1_1");
 
-            ministry.
+            ministry.AddGeneralDirector("Иван", "Иванов", 45);
         }
     }
 }

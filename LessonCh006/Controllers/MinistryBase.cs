@@ -11,8 +11,7 @@ namespace Controllers
     {
         #region Закрытые поля
 
-        private string nameMinistry;
-        private BindingList<Department> Departments { get; set; }
+        private string nameMinistry;        
         
         #endregion
 
@@ -40,6 +39,11 @@ namespace Controllers
                 nameMinistry = value;
             }
         }
+
+        /// <summary>
+        /// Список департаментов первого уровня
+        /// </summary>
+        protected BindingList<Department> Departments { get; private set; }
 
         /// <summary>
         /// Генеральный директор
@@ -290,7 +294,7 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
@@ -312,14 +316,14 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Получить данные начальника департамента
+        /// Получить данные руководителя департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
-        protected Supervisor GetHeadOfDepartment(string pathToDepartment)
+        protected Supervisor GetSupervisorOfDepartment(string pathToDepartment)
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
@@ -341,14 +345,14 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Получить данные интернов департамента
+        /// Получить данные работников департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         protected BindingList<IWorker> GetWorkersOfDepartment(string pathToDepartment)
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
@@ -525,10 +529,10 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Поиск департамента и удаление интерна
+        /// Поиск департамента и удаление работника
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>
-        /// <param name="intern"> Интерн </param>
+        /// <param name="worker"> Работник </param>
         /// <param name="department"> Текущий департамент </param>
         private bool DepartmentSearchAndDeleteWorker(string pathToDepartment, IWorker worker, Department department)
         {            

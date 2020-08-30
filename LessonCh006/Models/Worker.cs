@@ -6,103 +6,18 @@ namespace Models
     /// Работник
     /// </summary>
     public class Worker : IWorker
-    {        
-        string name;
-        string surname;
-        long age;
-        double salary;
-        string jobTitle;
-        string pathDepartment;        
-                
-        public string Name
-        {
-            get => name;
-
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException("Имя работника не может быть пустым!!!");
-                }
-
-                name = value;
-            }
-        }
-        public string Surname
-        {
-            get => surname;
-
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException("Фамилия работника не может быть пустой!!!");
-                }
-
-                surname = value;
-            }
-        }
-        public long Age
-        {
-            get => age;
-
-            set
-            {
-                if (value < 18 && value > 99)
-                {
-                    throw new ArgumentException("Невозможный возраст работника!!!");
-                }
-
-                age = value;
-            }
-        }
-        public double Salary
-        {
-            get => salary;
-
-            set
-            {
-                if (value < 0)
-                {
-                    throw new ArgumentException("Невозможная зарплата работника!!!");
-                }
-
-                salary = value;
-            }
-        }
-        public string JobTitle
-        {
-            get => jobTitle;
-
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException("Название должности работника не может быть пустым!!!");
-                }
-
-                jobTitle = value;
-            }
-        }
+    {
+        public string Name { get; set; }
+        public string Surname { get; set; }
+        public long Age { get; set; }
+        public double Salary { get; set; }
+        public string JobTitle { get; set; }
         public EmployeePosition EmployeePosition { get; set; }
 
         /// <summary>
-        /// Путь до департамента работника
+        /// Путь до департамента
         /// </summary>
-        public string PathDepartment
-        {
-            get => pathDepartment;
-
-            set
-            {
-                if (string.IsNullOrWhiteSpace(value))
-                {
-                    throw new ArgumentNullException("Название должности работника не может быть пустым!!!");
-                }
-
-                pathDepartment = value;
-            }
-        }
+        public string PathToDepartment { get; set; }
         
         /// <summary>
         /// Конструктор работник
@@ -110,15 +25,15 @@ namespace Models
         /// <param name="worker"> Работник </param>
         /// <param name="employeePosition"> Занимаемая должность </param>
         /// <param name="pathDepartment"> Путь до департамента работника </param>
-        public Worker(IWorker worker, EmployeePosition employeePosition, string pathDepartment)
+        public Worker(IWorker worker, string pathToDepartment)
         {
             Name = worker.Name;
             Surname = worker.Surname;
             Age = worker.Age;
             Salary = worker.Salary;
             JobTitle = worker.JobTitle;
-            EmployeePosition = employeePosition;
-            PathDepartment = pathDepartment;
+            EmployeePosition = worker.EmployeePosition;
+            PathToDepartment = pathToDepartment;
         }
     }
 }
