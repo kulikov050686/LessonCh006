@@ -12,6 +12,7 @@ namespace Controllers
         double salaryChiefAccountant = 0;
         double salaryDeputyDirector = 0;
         double salarySupervisorDepartment = 0;
+        double totalSalary = 0;
 
         #endregion
 
@@ -69,7 +70,7 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool AddSupervisorDepartment(string name, string surname, long age, string jobTitle, string pathToDepartment)
         {
-            var supervisor = new Supervisor(name, surname, age, 0, jobTitle);
+            var supervisor = new Supervisor(name, surname, age, salarySupervisorDepartment, jobTitle);
             AddWorkerToList(supervisor, pathToDepartment);
             return AddDeleteSupervisor(supervisor, pathToDepartment);
         }
@@ -158,33 +159,6 @@ namespace Controllers
 
         #region Закрытые методы
 
-        private double СalculateSalarySupervisor(string pathToDepartment)
-        {
-            double sum = 0;
-
-            if (!string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                Department department = GetDepartment(pathToDepartment);
-
-                if (department != null)
-                {
-                    sum += TotalSalaryOfAllEmployeesDepartment(department, false);
-                }
-            }
-            else 
-            {
-                if (Departments != null)
-                {
-                    for (int i = 0; i < Departments.Count; i++)
-                    {
-                        sum += TotalSalaryOfAllEmployeesDepartment(Departments[i], true);
-                    }
-                }
-            }
-                
-            return sum;
-        }
-
         /// <summary>
         /// Общая заработная плата всех сотрудников департамента
         /// </summary>
@@ -260,25 +234,140 @@ namespace Controllers
         /// <summary>
         /// Расчитать зарплату генерального директора
         /// </summary>
-        /// <param name="minSalary"> Минимальная зарплата Генерального Директора </param>
-        private double СalculateSalaryGeneralDirector(double minSalary)
+        /// <param name="minSalary"> Минимальная зарплата генерального директора </param>
+        /// <param name="coefficient"> Коэффициент </param>
+        private double СalculateSalaryGeneralDirector(double minSalary, double coefficient)
         {
-            double sum = 0;
-            
-            if (workers != null)
+            if(totalSalary == 0)
             {
-                for(int i = 0; i < workers.Count; i++)
-                {
-                    sum += workers[i].Salary;
-                }
+                СalculateTotalSalary();
             }
 
-            if(sum > minSalary)
+            double sum = totalSalary;
+
+            if(ChiefAccountant != null)
+            {
+                sum += ChiefAccountant.Salary;
+            }
+
+            if(DeputyDirector != null)
+            {
+                sum += DeputyDirector.Salary;
+            }
+
+            sum *= coefficient;
+
+            if (sum > minSalary)
             {
                 return sum;
             }
 
             return minSalary;
+        }
+
+        /// <summary>
+        /// Расчитать зарплату главного бугалтера
+        /// </summary>
+        /// <param name="minSalary"> Минимальная зарплата главного бугалтера </param>
+        /// <param name="coefficient"> Коэффициент </param>
+        private double СalculateSalaryChiefAccountant(double minSalary, double coefficient)
+        {
+            if (totalSalary == 0)
+            {
+                СalculateTotalSalary();
+            }
+
+            double sum = totalSalary;
+
+            sum *= coefficient;
+
+            if (sum > minSalary)
+            {
+                return sum;
+            }
+
+            return minSalary;
+        }
+
+        /// <summary>
+        /// Расчитать зарплату заместителя директора
+        /// </summary>
+        /// <param name="minSalary"> Минимальная зарплата заместителя директора </param>
+        /// <param name="coefficient"> Коэффициент </param>
+        private double СalculateSalaryDeputyDirector(double minSalary, double coefficient)
+        {
+            if (totalSalary == 0)
+            {
+                СalculateTotalSalary();
+            }
+
+            double sum = 0;
+
+            if (Departments != null)
+            {
+                for (int i = 0; i < Departments.Count; i++)
+                {
+                    sum += TotalSalaryOfAllEmployeesDepartment(Departments[i], true);
+                }
+            }
+
+            sum *= coefficient;
+
+            if (sum > minSalary)
+            {
+                return sum;
+            }
+
+            return minSalary;
+        }
+
+        /// <summary>
+        /// Расчитать зарплату руководителя департамента
+        /// </summary>
+        /// <param name="pathToDepartment"></param>
+        /// <param name="minSalary"> Минимальная зарплата заместителя директора </param>        
+        /// <param name="coefficient"> Коэффициент </param>
+        private double СalculateSalarySupervisor(string pathToDepartment, double minSalary, double coefficient)
+        {
+            double sum = 0;
+
+            if (!string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                Department department = GetDepartment(pathToDepartment);
+
+                if (department != null)
+                {
+                    sum += TotalSalaryOfAllEmployeesDepartment(department, false);
+                }
+            }
+
+            sum *= coefficient;
+
+            if (sum > minSalary)
+            {
+                return sum;
+            }
+
+            return minSalary;
+        }
+
+        /// <summary>
+        /// Расчитать суммарную зарплату всех сотрудников министерства
+        /// </summary>
+        private void СalculateTotalSalary()
+        {
+            if (Departments != null)
+            {
+                for (int i = 0; i < Departments.Count; i++)
+                {
+                    totalSalary += TotalSalaryOfAllEmployeesDepartment(Departments[i], true);
+                }
+            }            
+        }
+
+        private void СalculateSalary(string pathToDepartment)
+        {
+            
         }
 
         #endregion

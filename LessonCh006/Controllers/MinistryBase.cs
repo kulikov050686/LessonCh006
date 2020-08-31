@@ -31,11 +31,6 @@ namespace Controllers
                     throw new ArgumentNullException("Название министерства не может быть пустым!!!");
                 }
 
-                if(!CorrectnessOfName(value))
-                {
-                    throw new ArgumentNullException("Название министерства некорректно!!!");
-                }
-
                 nameMinistry = value;
             }
         }
@@ -134,43 +129,41 @@ namespace Controllers
         /// </summary>
         /// <param name="nameDepartment"> Название удаляемого поддепартамента </param>        
         /// <param name="pathToParentDepartment"> Путь до родительского департамента </param>
-        public bool DeleteDepartment(string nameDepartment, string pathToParentDepartment = null)
+        public bool DeleteDepartment(string pathToDepartment)
         {
-            if(Departments != null)
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                if (!string.IsNullOrWhiteSpace(nameDepartment) && CorrectnessOfName(nameDepartment))
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
+            if (Departments != null)
+            {
+                string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
+                pathToDepartment = ShortenPath(pathToDepartment);
+                int numberDepartments = SearchNumber(ParentDepartment);
+
+                if (pathToDepartment.Length == 0)
                 {
-                    if(string.IsNullOrWhiteSpace(pathToParentDepartment))
+                    if (numberDepartments > -1)
                     {
-                        int numberDepartments = SearchNumber(nameDepartment);
-
-                        if (numberDepartments > -1)
-                        {
-                            Departments.RemoveAt(numberDepartments);
-                            return true;
-                        }                       
+                        Departments.RemoveAt(numberDepartments);
+                        return true;
                     }
-                    else 
-                    {
-                        string NameDepartment = NameOfCurrentDepartment(pathToParentDepartment);
-                        int numberDepartments = SearchNumber(NameDepartment);
-
-                        if (numberDepartments > -1)
-                        {
-                            if (DepartmentSearchAndDelete(pathToParentDepartment, nameDepartment, Departments[numberDepartments]))
-                            {
-                                return true;
-                            }
-                        }                        
-                    }                    
-                }                
+                }
+                else 
+                {
+                    if(numberDepartments > -1)
+                    {                        
+                        return DepartmentSearchAndDelete(pathToDepartment, Departments[numberDepartments]);
+                    }
+                }
             }            
 
             return false;
         }
 
         /// <summary>
-        /// Добавить руководителя в департамент
+        /// Добавить или удалить руководителя в департамент
         /// </summary>
         /// <param name="supervisor"> Руководитель департамента </param>
         /// <param name="pathToDepartment"> Путь до депортамента </param>
@@ -418,7 +411,8 @@ namespace Controllers
                     if (numberDepartments == -1)
                     {
                         department.NextDepartments.Add(new Department(ParentDepartment));
-                        DepartmentSearchAndAdding(ParentDepartment, department.NextDepartments[0]);
+                        numberDepartments = SearchNumber(ParentDepartment, department);
+                        DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[numberDepartments]);
                     }
                     else
                     {
@@ -434,34 +428,29 @@ namespace Controllers
         /// <param name="pathToParentDepartment"> Путь до родительского департамента </param>
         /// <param name="nameDepartment"> Название удаляемого поддепартамента </param>
         /// <param name="department"> Родительский департамент </param>
-        private bool DepartmentSearchAndDelete(string pathToParentDepartment, string nameDepartment, Department department)
+        private bool DepartmentSearchAndDelete(string pathToDepartment, Department department)
         {
-            int numberDepartments = -1;
-            string NameParentDepartment = NameOfCurrentDepartment(pathToParentDepartment);
-            pathToParentDepartment = ShortenPath(pathToParentDepartment);
-
-            if (department.NameDepartment == NameParentDepartment && pathToParentDepartment.Length == 0)
-            {               
-                if(department.NextDepartments != null)
-                {
-                    numberDepartments = SearchNumber(nameDepartment, department);
-
-                    if(numberDepartments > -1)
-                    {
-                        department.NextDepartments.RemoveAt(numberDepartments);
-                        return true;
-                    }                    
-                }
-
-                return false;
-            }
-
-            NameParentDepartment = NameOfCurrentDepartment(pathToParentDepartment);            
-            numberDepartments = SearchNumber(NameParentDepartment, department);            
+            string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
+            int numberDepartments = SearchNumber(NameParentDepartment, department);
+            pathToDepartment = ShortenPath(pathToDepartment);
 
             if (numberDepartments > -1)
             {
-                return DepartmentSearchAndDelete(pathToParentDepartment, nameDepartment, department.NextDepartments[numberDepartments]);
+                if(pathToDepartment.Length != 0)
+                {
+                    return DepartmentSearchAndDelete(pathToDepartment, department.NextDepartments[numberDepartments]);
+                }
+                else
+                {
+                    if (department.NextDepartments != null)
+                    {
+                        if (numberDepartments > -1)
+                        {
+                            department.NextDepartments.RemoveAt(numberDepartments);
+                            return true;
+                        }
+                    }
+                }                
             }
 
             return false;
@@ -703,33 +692,7 @@ namespace Controllers
 
             return temp;
         }
-
-        /// <summary>
-        /// Корректность ввода названия
-        /// </summary>
-        /// <param name="name"> Название </param>        
-        private bool CorrectnessOfName(string name)
-        {
-            for (int i = 0; i < name.Length; i++)
-            {
-                if (ForbiddenSymbol(name[i]))
-                {
-                    return false;
-                }
-            }
-
-            return true;
-        }
-
-        /// <summary>
-        /// Запрещённый символ
-        /// </summary>
-        /// <param name="Symbol"> Символ </param>        
-        private bool ForbiddenSymbol(char Symbol)
-        {
-            return Symbol == '/';                   
-        }
-
+        
         /// <summary>
         /// Поиск номера вхождения департамента в основной список
         /// </summary>
