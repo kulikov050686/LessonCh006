@@ -1,5 +1,5 @@
 ﻿using System;
-using System.ComponentModel;
+using System.Collections.Generic;
 using Models;
 
 namespace Controllers
@@ -38,7 +38,7 @@ namespace Controllers
         /// <summary>
         /// Список департаментов первого уровня
         /// </summary>
-        protected BindingList<Department> Departments { get; private set; }
+        protected List<Department> Departments { get; private set; }
 
         /// <summary>
         /// Генеральный директор
@@ -46,7 +46,7 @@ namespace Controllers
         protected Supervisor GeneralDirector { get; set; }
 
         /// <summary>
-        /// Главный бугалтер
+        /// Главный бухгалтер
         /// </summary>
         protected Supervisor ChiefAccountant { get; set; }
 
@@ -76,13 +76,8 @@ namespace Controllers
         /// Добавить департамент
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
-        public void AddDepartment(string pathToDepartment)
+        protected void AddDepartment(string pathToDepartment)
         {
-            if (string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
-            }
-
             string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             pathToDepartment = ShortenPath(pathToDepartment);
 
@@ -90,13 +85,13 @@ namespace Controllers
             {
                 if(pathToDepartment.Length == 0)
                 {
-                    Departments = new BindingList<Department>();                    
+                    Departments = new List<Department>();                    
                     Departments.Add(new Department(ParentDepartment));
                     return;                    
                 }
                 else
                 {
-                    Departments = new BindingList<Department>();
+                    Departments = new List<Department>();
                     Departments.Add(new Department(ParentDepartment));
                 }                
             }
@@ -126,16 +121,10 @@ namespace Controllers
 
         /// <summary>
         /// Удалить департамент
-        /// </summary>
-        /// <param name="nameDepartment"> Название удаляемого поддепартамента </param>        
-        /// <param name="pathToParentDepartment"> Путь до родительского департамента </param>
-        public bool DeleteDepartment(string pathToDepartment)
+        /// </summary>             
+        /// <param name="pathToDepartment"> Путь до родительского департамента </param>
+        protected bool DeleteDepartment(string pathToDepartment)
         {
-            if (string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
-            }
-
             if (Departments != null)
             {
                 string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
@@ -212,7 +201,7 @@ namespace Controllers
                     {
                         if (Departments[numberDepartments].Workers == null)
                         {
-                            Departments[numberDepartments].Workers = new BindingList<IWorker>();
+                            Departments[numberDepartments].Workers = new List<IWorker>();
                         }
 
                         Departments[numberDepartments].Workers.Add(worker);
@@ -338,10 +327,10 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Получить данные работников департамента
+        /// Получить лист с данными работников департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
-        protected BindingList<IWorker> GetWorkersOfDepartment(string pathToDepartment)
+        protected List<IWorker> GetWorkersOfDepartment(string pathToDepartment)
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
@@ -385,12 +374,12 @@ namespace Controllers
             {
                 if (pathToDepartment.Length == 0)
                 {
-                    department.NextDepartments = new BindingList<Department>();
+                    department.NextDepartments = new List<Department>();
                     department.NextDepartments.Add(new Department(ParentDepartment));
                 }
                 else
                 {
-                    department.NextDepartments = new BindingList<Department>();
+                    department.NextDepartments = new List<Department>();
                     department.NextDepartments.Add(new Department(ParentDepartment));
                     DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[0]);
                 }
@@ -499,7 +488,7 @@ namespace Controllers
             {
                 if(department.Workers == null)
                 {
-                    department.Workers = new BindingList<IWorker>();
+                    department.Workers = new List<IWorker>();
                 }
 
                 department.Workers.Add(worker);
@@ -621,7 +610,7 @@ namespace Controllers
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>
         /// <param name="department"> Текущий департамент </param>        
-        private BindingList<IWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
+        private List<IWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             pathToDepartment = ShortenPath(pathToDepartment);

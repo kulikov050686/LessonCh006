@@ -1,5 +1,6 @@
 ﻿using Models;
 using System;
+using System.Collections.Generic;
 using System.ComponentModel;
 
 namespace Controllers
@@ -7,8 +8,7 @@ namespace Controllers
     public class Ministry : MinistryBase
     {
         #region Закрытые поля
-
-        BindingList<Worker> workers;
+               
         const double minSalary = 1300;
         double salaryGeneralDirector;
         double salaryChiefAccountant;
@@ -35,6 +35,40 @@ namespace Controllers
         #region Открытые методы
 
         /// <summary>
+        /// Добавить департамент
+        /// </summary>
+        /// <param name="pathToDepartment"> Путь до департамента </param>
+        public new void AddDepartment(string pathToDepartment)
+        {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
+            }
+
+            base.AddDepartment(pathToDepartment);
+        }
+
+        /// <summary>
+        /// Удалить департамент
+        /// </summary>             
+        /// <param name="pathToDepartment"> Путь до родительского департамента </param>
+        public new bool DeleteDepartment(string pathToDepartment)
+        {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
+            }
+
+            if(base.DeleteDepartment(pathToDepartment))
+            {
+                СalculateSalary();
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
         /// Добавить генерального директора
         /// </summary>
         /// <param name="name"> Имя </param>
@@ -42,22 +76,44 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddGeneralDirector(string name, string surname, long age)
         {
-            GeneralDirector = new Supervisor(name, surname, age, salaryGeneralDirector, "Генеральный директор");
-            AddWorkerToList(GeneralDirector);
-            СalculateSalary();
+            GeneralDirector = new Supervisor(name, surname, age, minSalary, "Генеральный директор");            
+            СalculateSalary();            
         }
 
         /// <summary>
-        /// Добавить главного бугалтера
+        /// Удалить генерального директора
+        /// </summary>
+        public void DeleteGeneralDirector()
+        {
+            if(GeneralDirector != null)
+            {                
+                salaryGeneralDirector = 0;
+                GeneralDirector = null;
+            }
+        }
+
+        /// <summary>
+        /// Добавить главного бухгалтера
         /// </summary>
         /// <param name="name"> Имя </param>
         /// <param name="surname"> Фамилия </param>
         /// <param name="age"> Возраст </param>
         public void AddChiefAccountant(string name, string surname, long age)
         {
-            ChiefAccountant = new Supervisor(name, surname, age, salaryChiefAccountant, "Главный бугалтер");
-            AddWorkerToList(ChiefAccountant);
-            СalculateSalary();
+            ChiefAccountant = new Supervisor(name, surname, age, minSalary, "Главный бугалтер");
+            СalculateSalary();            
+        }
+
+        /// <summary>
+        /// Удалить главного бухгалтера
+        /// </summary>
+        public void DeleteChiefAccountant()
+        {
+            if(ChiefAccountant != null)
+            {                
+                ChiefAccountant = null;
+                СalculateSalary();
+            }
         }
 
         /// <summary>
@@ -68,9 +124,20 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddDeputyDirector(string name, string surname, long age)
         {
-            DeputyDirector = new Supervisor(name, surname, age, salaryDeputyDirector, "Заместитель генерального директора");
-            AddWorkerToList(DeputyDirector);
-            СalculateSalary();
+            DeputyDirector = new Supervisor(name, surname, age, minSalary, "Заместитель генерального директора");
+            СalculateSalary();                      
+        }
+
+        /// <summary>
+        /// Удалить заместителя генерального директора
+        /// </summary>
+        public void DeleteDeputyDirector()
+        {
+            if(DeputyDirector != null)
+            {                
+                DeputyDirector = null;
+                СalculateSalary();
+            }
         }
 
         /// <summary>
@@ -85,15 +152,14 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             var supervisor = new Supervisor(name, surname, age, minSalary, jobTitle);
 
             if(AddDeleteSupervisor(supervisor, pathToDepartment))
             {
-                AddWorkerToList(supervisor, pathToDepartment);
-                СalculateSalary(pathToDepartment);
+                СalculateSalary(pathToDepartment);                             
                 return true;
             }
             
@@ -108,14 +174,7 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
-            }
-
-            var supervisor = GetSupervisorOfDepartment(pathToDepartment);
-
-            if(supervisor != null)
-            {
-                DeleteWorkerFromList(supervisor, pathToDepartment);
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             if(AddDeleteSupervisor(null, pathToDepartment))
@@ -140,15 +199,14 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             var intern = new Intern(name, surname, age, salary, jobTitle);
 
             if(AddWorker(intern, pathToDepartment))
             {
-                AddWorkerToList(intern, pathToDepartment);
-                СalculateSalary(pathToDepartment);
+                СalculateSalary(pathToDepartment);                               
                 return true;
             }
 
@@ -168,14 +226,13 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             var intern = new Intern(name, surname, age, salary, jobTitle);
 
             if(DeleteWorker(intern, pathToDepartment))
-            {
-                DeleteWorkerFromList(intern, pathToDepartment);
+            {                
                 СalculateSalary(pathToDepartment);
                 return true;
             }
@@ -196,15 +253,14 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             var employee = new Employee(name, surname, age, salary, jobTitle);
 
             if(AddWorker(employee, pathToDepartment))
             {
-                AddWorkerToList(employee, pathToDepartment);
-                СalculateSalary(pathToDepartment);
+                СalculateSalary(pathToDepartment);                
                 return true;
             }
             
@@ -224,14 +280,13 @@ namespace Controllers
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
-                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
             }
 
             var employee = new Employee(name, surname, age, salary, jobTitle);
 
             if(DeleteWorker(employee, pathToDepartment))
-            {
-                DeleteWorkerFromList(employee, pathToDepartment);
+            {                
                 СalculateSalary(pathToDepartment);
                 return true;
             }
@@ -239,10 +294,100 @@ namespace Controllers
             return false;
         }
 
+        /// <summary>
+        /// Получить список всех работников
+        /// </summary>        
+        public BindingList<Worker> GetListOfAllWorkers()
+        {
+            List<Worker> workers = new List<Worker>();
+
+            if(GeneralDirector != null)
+            {
+                workers.Add(new Worker(GeneralDirector, null));
+            }
+
+            if(ChiefAccountant != null)
+            {
+                workers.Add(new Worker(ChiefAccountant, null));
+            }
+
+            if(DeputyDirector != null)
+            {
+                workers.Add(new Worker(DeputyDirector, null));
+            }
+
+            if(Departments != null)
+            {
+                List<Worker> temp;
+
+                for(int i = 0; i < Departments.Count; i++)
+                {
+                    temp = ListOfAllWorkers(Departments[i], Departments[i].NameDepartment);
+
+                    if (temp.Count != 0)
+                    {
+                        workers.AddRange(temp);
+                    }                                        
+                }
+            }
+
+            if(workers.Count != 0)
+            {
+                BindingList<Worker> blworkers = new BindingList<Worker>();
+
+                for(int i = 0; i < workers.Count; i++)
+                {
+                    blworkers.Add(workers[i]);
+                }
+
+                return blworkers;
+            }
+
+            return null;
+        }
+
+        /// <summary>
+        /// Получить лист всех работников департамента
+        /// </summary>
+        /// <param name="pathToDepartment"> Путь до департамента </param>        
+        public BindingList<Worker> GetListOfAllWorkersDepartment(string pathToDepartment)
+        {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
+            }
+
+            Department department = GetDepartment(pathToDepartment);
+
+            if(department != null)
+            {
+                BindingList<Worker> temp;
+
+                if(department.CountWorkers != 0)
+                {
+                    temp = new BindingList<Worker>();
+
+                    for(int i = 0; i < department.CountWorkers; i++)
+                    {
+                        temp.Add(new Worker(department.Workers[i], pathToDepartment));
+                    }
+
+                    if (department.Supervisor != null)
+                    {
+                        temp.Add(new Worker(department.Supervisor, pathToDepartment));
+                    }
+
+                    return temp;
+                }                
+            }
+
+            return null;
+        }
+
         #endregion
 
         #region Закрытые методы
-
+        
         /// <summary>
         /// Общая заработная плата всех сотрудников департамента и поддепартаментов
         /// </summary>
@@ -252,14 +397,14 @@ namespace Controllers
         {
             double sum = 0;
 
-            if(department != null)
+            if (department != null)
             {
                 for (int j = 0; j < department.CountWorkers; j++)
                 {
                     sum += department.Workers[j].Salary;
                 }
 
-                if(key && department.Supervisor != null)
+                if (key && department.Supervisor != null)
                 {
                     sum += department.Supervisor.Salary;
                 }
@@ -273,48 +418,6 @@ namespace Controllers
             return sum;
         }
 
-        /// <summary>
-        /// Добавить работника в лист
-        /// </summary>
-        /// <param name="worker"> Работник </param>
-        /// <param name="pathToDepartment"> Путь до департамента </param>
-        private void AddWorkerToList(IWorker worker, string pathToDepartment = null)
-        {
-            if(workers == null)
-            {
-                workers = new BindingList<Worker>();
-            }
-
-            workers.Add(new Worker(worker, pathToDepartment));
-        }
-
-        /// <summary>
-        /// Удалить работника из листа
-        /// </summary>
-        /// <param name="worker"> Работник </param>
-        /// <param name="pathToDepartment"> Путь до департамента </param>
-        private void DeleteWorkerFromList(IWorker worker, string pathToDepartment = null)
-        {
-            if(workers != null)
-            {
-                var tempWorker = new Worker(worker, pathToDepartment);
-                int k = -1;
-
-                for(int i = 0; i < workers.Count; i++)
-                {
-                    if(workers[i] == tempWorker)
-                    {
-                        k = i;
-                    }
-                }
-
-                if(k > -1)
-                {
-                    workers.RemoveAt(k);
-                }
-            }
-        }
-        
         /// <summary>
         /// Расчитать зарплату руководителя департамента
         /// </summary>
@@ -335,6 +438,10 @@ namespace Controllers
                     if (salarySupervisorDepartment > minSalary)
                     {
                         supervisor.Salary = salarySupervisorDepartment;
+                    }
+                    else
+                    {
+                        supervisor.Salary = minSalary;
                     }
                 }
 
@@ -378,13 +485,13 @@ namespace Controllers
             {
                 salaryDeputyDirector = 0.15 * totalSalary;
 
-                if(salaryDeputyDirector <= minSalary)
+                if(salaryDeputyDirector > minSalary)
                 {
-                    DeputyDirector.Salary = minSalary;
+                    DeputyDirector.Salary = salaryDeputyDirector;
                 }
                 else
                 {
-                    DeputyDirector.Salary = salaryDeputyDirector;
+                    DeputyDirector.Salary = minSalary;
                 }
             }
             else
@@ -396,13 +503,13 @@ namespace Controllers
             {
                 salaryChiefAccountant = 0.15 * totalSalary;
 
-                if(salaryChiefAccountant <= minSalary)
+                if(salaryChiefAccountant > minSalary)
                 {
-                    ChiefAccountant.Salary = minSalary;
+                    ChiefAccountant.Salary = salaryChiefAccountant;
                 }
                 else
                 {
-                    ChiefAccountant.Salary = salaryChiefAccountant;
+                    ChiefAccountant.Salary = minSalary;
                 }
             }
             else
@@ -414,13 +521,13 @@ namespace Controllers
             {
                 salaryGeneralDirector = 0.15 * (salaryChiefAccountant + salaryDeputyDirector + totalSalary);
 
-                if(salaryGeneralDirector <= minSalary)
+                if(salaryGeneralDirector > minSalary)
                 {
-                    GeneralDirector.Salary = minSalary;
+                    GeneralDirector.Salary = salaryGeneralDirector;
                 }
                 else
                 {
-                    GeneralDirector.Salary = salaryGeneralDirector;
+                    GeneralDirector.Salary = minSalary;
                 }
             }
         }
@@ -456,6 +563,61 @@ namespace Controllers
             }
 
             return path.Substring(0, path.Length - (++temp));
+        }
+
+        /// <summary>
+        /// Лист всех работников
+        /// </summary>
+        /// <param name="department"> Департамент </param>
+        /// <param name="nameDepartment"> Имя текущего департамента </param>        
+        private List<Worker> ListOfAllWorkers(Department department, string nameDepartment)
+        {
+            List<Worker> workers = new List<Worker>();
+
+            if (department.NextDepartments != null)
+            {
+                List<Worker> temp;
+
+                for (int i = 0; i < department.CountDepartments; i++)
+                {
+                    temp = ListOfAllWorkers(department.NextDepartments[i], nameDepartment + "/" + department.NextDepartments[i].NameDepartment);
+
+                    if (temp.Count != 0)
+                    {
+                        workers.AddRange(temp);
+                    }                    
+                }
+
+                if (department.Supervisor != null)
+                {
+                    workers.Add(new Worker(department.Supervisor, nameDepartment));
+                }
+
+                if (department.CountWorkers != 0)
+                {
+                    for (int j = 0; j < department.CountWorkers; j++)
+                    {
+                        workers.Add(new Worker(department.Workers[j], nameDepartment));
+                    }
+                }
+            }
+            else
+            {
+                if (department.Supervisor != null)
+                {
+                    workers.Add(new Worker(department.Supervisor, nameDepartment));
+                }
+
+                if (department.CountWorkers != 0)
+                {
+                    for (int i = 0; i < department.CountWorkers; i++)
+                    {
+                        workers.Add(new Worker(department.Workers[i], nameDepartment));
+                    }
+                }
+            }
+
+            return workers;
         }
 
         #endregion
