@@ -1,28 +1,38 @@
 ﻿using Models;
+using System;
 using System.ComponentModel;
 
 namespace Controllers
 {
-    class Ministry : MinistryBase
+    public class Ministry : MinistryBase
     {
         #region Закрытые поля
 
         BindingList<Worker> workers;
-        double salaryGeneralDirector = 0;
-        double salaryChiefAccountant = 0;
-        double salaryDeputyDirector = 0;
-        double salarySupervisorDepartment = 0;
-        double totalSalary = 0;
+        const double minSalary = 1300;
+        double salaryGeneralDirector;
+        double salaryChiefAccountant;
+        double salaryDeputyDirector;        
+        double totalSalary;
 
         #endregion
 
-        #region Открытые методы
+        #region Конструктор
 
         /// <summary>
         /// Конструктор министерства
         /// </summary>
         /// <param name="nameMinistry"> Название министерства </param>
-        public Ministry(string nameMinistry) : base(nameMinistry) {}
+        public Ministry(string nameMinistry) : base(nameMinistry) 
+        {
+            salaryGeneralDirector = 0;
+            salaryChiefAccountant = 0;
+            salaryDeputyDirector = 0;
+        }
+
+        #endregion
+
+        #region Открытые методы
 
         /// <summary>
         /// Добавить генерального директора
@@ -34,6 +44,7 @@ namespace Controllers
         {
             GeneralDirector = new Supervisor(name, surname, age, salaryGeneralDirector, "Генеральный директор");
             AddWorkerToList(GeneralDirector);
+            СalculateSalary();
         }
 
         /// <summary>
@@ -46,6 +57,7 @@ namespace Controllers
         {
             ChiefAccountant = new Supervisor(name, surname, age, salaryChiefAccountant, "Главный бугалтер");
             AddWorkerToList(ChiefAccountant);
+            СalculateSalary();
         }
 
         /// <summary>
@@ -58,6 +70,7 @@ namespace Controllers
         {
             DeputyDirector = new Supervisor(name, surname, age, salaryDeputyDirector, "Заместитель генерального директора");
             AddWorkerToList(DeputyDirector);
+            СalculateSalary();
         }
 
         /// <summary>
@@ -70,9 +83,21 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool AddSupervisorDepartment(string name, string surname, long age, string jobTitle, string pathToDepartment)
         {
-            var supervisor = new Supervisor(name, surname, age, salarySupervisorDepartment, jobTitle);
-            AddWorkerToList(supervisor, pathToDepartment);
-            return AddDeleteSupervisor(supervisor, pathToDepartment);
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
+            var supervisor = new Supervisor(name, surname, age, minSalary, jobTitle);
+
+            if(AddDeleteSupervisor(supervisor, pathToDepartment))
+            {
+                AddWorkerToList(supervisor, pathToDepartment);
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
+            
+            return false;
         }
         
         /// <summary>
@@ -81,14 +106,25 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool DeleteSupervisorDepartment(string pathToDepartment)
         {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
             var supervisor = GetSupervisorOfDepartment(pathToDepartment);
 
             if(supervisor != null)
             {
                 DeleteWorkerFromList(supervisor, pathToDepartment);
             }
+
+            if(AddDeleteSupervisor(null, pathToDepartment))
+            {
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
             
-            return AddDeleteSupervisor(null, pathToDepartment);
+            return false;
         }
 
         /// <summary>
@@ -102,9 +138,21 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool AddIntern(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
             var intern = new Intern(name, surname, age, salary, jobTitle);
-            AddWorkerToList(intern, pathToDepartment);
-            return AddWorker(intern, pathToDepartment);
+
+            if(AddWorker(intern, pathToDepartment))
+            {
+                AddWorkerToList(intern, pathToDepartment);
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
+
+            return false; 
         }
 
         /// <summary>
@@ -118,9 +166,21 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool DeleteIntern(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
             var intern = new Intern(name, surname, age, salary, jobTitle);
-            DeleteWorkerFromList(intern, pathToDepartment);
-            return DeleteWorker(intern, pathToDepartment);
+
+            if(DeleteWorker(intern, pathToDepartment))
+            {
+                DeleteWorkerFromList(intern, pathToDepartment);
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
+
+            return false;
         }
 
         /// <summary>
@@ -134,9 +194,21 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         public bool AddEmployee(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
             var employee = new Employee(name, surname, age, salary, jobTitle);
-            AddWorkerToList(employee, pathToDepartment);
-            return AddWorker(employee, pathToDepartment);
+
+            if(AddWorker(employee, pathToDepartment))
+            {
+                AddWorkerToList(employee, pathToDepartment);
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
+            
+            return false;
         }
 
         /// <summary>
@@ -150,9 +222,21 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public bool DeleteEmployee(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if (string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                throw new ArgumentNullException("Путь до департамента не может быть путсым!!!");
+            }
+
             var employee = new Employee(name, surname, age, salary, jobTitle);
-            DeleteWorkerFromList(employee, pathToDepartment);
-            return DeleteWorker(employee, pathToDepartment);
+
+            if(DeleteWorker(employee, pathToDepartment))
+            {
+                DeleteWorkerFromList(employee, pathToDepartment);
+                СalculateSalary(pathToDepartment);
+                return true;
+            }
+
+            return false;
         }
 
         #endregion
@@ -160,7 +244,7 @@ namespace Controllers
         #region Закрытые методы
 
         /// <summary>
-        /// Общая заработная плата всех сотрудников департамента
+        /// Общая заработная плата всех сотрудников департамента и поддепартаментов
         /// </summary>
         /// <param name="department"> Департамент </param>
         /// <param name="key"> Ключ учитывать ли зарплату руководителя </param>        
@@ -230,125 +314,37 @@ namespace Controllers
                 }
             }
         }
-
-        /// <summary>
-        /// Расчитать зарплату генерального директора
-        /// </summary>
-        /// <param name="minSalary"> Минимальная зарплата генерального директора </param>
-        /// <param name="coefficient"> Коэффициент </param>
-        private double СalculateSalaryGeneralDirector(double minSalary, double coefficient)
-        {
-            if(totalSalary == 0)
-            {
-                СalculateTotalSalary();
-            }
-
-            double sum = totalSalary;
-
-            if(ChiefAccountant != null)
-            {
-                sum += ChiefAccountant.Salary;
-            }
-
-            if(DeputyDirector != null)
-            {
-                sum += DeputyDirector.Salary;
-            }
-
-            sum *= coefficient;
-
-            if (sum > minSalary)
-            {
-                return sum;
-            }
-
-            return minSalary;
-        }
-
-        /// <summary>
-        /// Расчитать зарплату главного бугалтера
-        /// </summary>
-        /// <param name="minSalary"> Минимальная зарплата главного бугалтера </param>
-        /// <param name="coefficient"> Коэффициент </param>
-        private double СalculateSalaryChiefAccountant(double minSalary, double coefficient)
-        {
-            if (totalSalary == 0)
-            {
-                СalculateTotalSalary();
-            }
-
-            double sum = totalSalary;
-
-            sum *= coefficient;
-
-            if (sum > minSalary)
-            {
-                return sum;
-            }
-
-            return minSalary;
-        }
-
-        /// <summary>
-        /// Расчитать зарплату заместителя директора
-        /// </summary>
-        /// <param name="minSalary"> Минимальная зарплата заместителя директора </param>
-        /// <param name="coefficient"> Коэффициент </param>
-        private double СalculateSalaryDeputyDirector(double minSalary, double coefficient)
-        {
-            if (totalSalary == 0)
-            {
-                СalculateTotalSalary();
-            }
-
-            double sum = 0;
-
-            if (Departments != null)
-            {
-                for (int i = 0; i < Departments.Count; i++)
-                {
-                    sum += TotalSalaryOfAllEmployeesDepartment(Departments[i], true);
-                }
-            }
-
-            sum *= coefficient;
-
-            if (sum > minSalary)
-            {
-                return sum;
-            }
-
-            return minSalary;
-        }
-
+        
         /// <summary>
         /// Расчитать зарплату руководителя департамента
         /// </summary>
         /// <param name="pathToDepartment"></param>
         /// <param name="minSalary"> Минимальная зарплата заместителя директора </param>        
         /// <param name="coefficient"> Коэффициент </param>
-        private double СalculateSalarySupervisor(string pathToDepartment, double minSalary, double coefficient)
+        private void СalculateSalarySupervisors(string pathToDepartment)
         {
-            double sum = 0;
+            Department department = GetDepartment(pathToDepartment);
 
-            if (!string.IsNullOrWhiteSpace(pathToDepartment))
+            if(department != null)
             {
-                Department department = GetDepartment(pathToDepartment);
+                double salarySupervisorDepartment = 0.15 * TotalSalaryOfAllEmployeesDepartment(department, false);
+                Supervisor supervisor = GetSupervisorOfDepartment(pathToDepartment);
 
-                if (department != null)
-                {
-                    sum += TotalSalaryOfAllEmployeesDepartment(department, false);
+                if (supervisor != null)
+                {                    
+                    if (salarySupervisorDepartment > minSalary)
+                    {
+                        supervisor.Salary = salarySupervisorDepartment;
+                    }
                 }
-            }
 
-            sum *= coefficient;
+                pathToDepartment = ShortenPath(pathToDepartment);
 
-            if (sum > minSalary)
-            {
-                return sum;
-            }
-
-            return minSalary;
+                if (pathToDepartment.Length != 0)
+                {
+                    СalculateSalarySupervisors(pathToDepartment);
+                }
+            }            
         }
 
         /// <summary>
@@ -365,9 +361,101 @@ namespace Controllers
             }            
         }
 
-        private void СalculateSalary(string pathToDepartment)
+        /// <summary>
+        /// Расчёт зарплат руководителей
+        /// </summary>
+        /// <param name="pathToDepartment"> Путь до департамента </param>
+        private void СalculateSalary(string pathToDepartment = null)
         {
+            if(!string.IsNullOrWhiteSpace(pathToDepartment))
+            {
+                СalculateSalarySupervisors(pathToDepartment);
+            }
+
+            СalculateTotalSalary();
+
+            if(DeputyDirector != null)
+            {
+                salaryDeputyDirector = 0.15 * totalSalary;
+
+                if(salaryDeputyDirector <= minSalary)
+                {
+                    DeputyDirector.Salary = minSalary;
+                }
+                else
+                {
+                    DeputyDirector.Salary = salaryDeputyDirector;
+                }
+            }
+            else
+            {
+                salaryDeputyDirector = 0;
+            }
+
+            if(ChiefAccountant != null)
+            {
+                salaryChiefAccountant = 0.15 * totalSalary;
+
+                if(salaryChiefAccountant <= minSalary)
+                {
+                    ChiefAccountant.Salary = minSalary;
+                }
+                else
+                {
+                    ChiefAccountant.Salary = salaryChiefAccountant;
+                }
+            }
+            else
+            {
+                salaryChiefAccountant = 0;
+            }
             
+            if(GeneralDirector != null)
+            {
+                salaryGeneralDirector = 0.15 * (salaryChiefAccountant + salaryDeputyDirector + totalSalary);
+
+                if(salaryGeneralDirector <= minSalary)
+                {
+                    GeneralDirector.Salary = minSalary;
+                }
+                else
+                {
+                    GeneralDirector.Salary = salaryGeneralDirector;
+                }
+            }
+        }
+
+        /// <summary>
+        /// Сократить путь с конца
+        /// </summary>
+        /// <param name="path"> Путь к родителю </param>
+        private string ShortenPath(string path)
+        {
+            if(path[path.Length - 1] == '/')
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+
+            int temp = 0;
+
+            for(int i = path.Length - 1; i >= 0; i--)
+            {
+                if(path[i] != '/')
+                {
+                    temp++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (temp == path.Length)
+            {
+                return "";
+            }
+
+            return path.Substring(0, path.Length - (++temp));
         }
 
         #endregion

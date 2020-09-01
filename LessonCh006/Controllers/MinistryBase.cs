@@ -643,16 +643,16 @@ namespace Controllers
         }       
 
         /// <summary>
-        /// Сократить путь
+        /// Сократить путь с начала
         /// </summary>
-        /// <param name="pathToParent"> Путь к родителю </param>
-        private string ShortenPath(string pathToParent)
+        /// <param name="path"> Путь </param>
+        private string ShortenPath(string path)
         {
             int temp = 0;
 
-            for(int i = 0; i < pathToParent.Length; i++)
+            for(int i = 0; i < path.Length; i++)
             {
-                if(pathToParent[i] != '/')
+                if(path[i] != '/')
                 {                    
                     temp++;
                 }
@@ -662,12 +662,12 @@ namespace Controllers
                 }
             }
 
-            if(temp == pathToParent.Length)
+            if(temp == path.Length)
             {
                 return "";
             }
 
-            return pathToParent.Substring(++temp);
+            return path.Substring(++temp);
         }
 
         /// <summary>
