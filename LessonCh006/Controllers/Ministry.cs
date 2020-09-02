@@ -100,7 +100,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddChiefAccountant(string name, string surname, long age)
         {
-            ChiefAccountant = new Supervisor(name, surname, age, minSalary, "Главный бугалтер");
+            ChiefAccountant = new Supervisor(name, surname, age, minSalary, "Главный бухгалтер");
             СalculateSalary();            
         }
 
@@ -347,7 +347,72 @@ namespace Controllers
         }
 
         /// <summary>
-        /// Получить лист всех работников департамента
+        /// Устанавить список всех работников 
+        /// </summary>
+        /// <param name="workers"> Список работников </param>
+        public bool SetListOfAllWorkers(BindingList<Worker> workers)
+        {
+            if(workers != null)
+            {
+                bool key = true;
+
+                for(int i = 0; i < workers.Count && key; i++)
+                {
+                    if(string.IsNullOrWhiteSpace(workers[i].PathToDepartment))
+                    {
+                        key = false;
+
+                        if(workers[i].JobTitle == "Генеральный директор")
+                        {
+                            GeneralDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = true;
+                        }
+
+                        if(workers[i].JobTitle == "Главный бухгалтер")
+                        {
+                            ChiefAccountant = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = true;
+                        }
+
+                        if(workers[i].JobTitle == "Заместитель генерального директора")
+                        {
+                            DeputyDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = true;
+                        }
+                    }
+                    else
+                    {
+                        string pathToDepartment = workers[i].PathToDepartment;
+                        AddDepartment(pathToDepartment);
+
+                        if(workers[i].EmployeePosition == EmployeePosition.Intern)
+                        {
+                            var intern = new Intern(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = AddWorker(intern, pathToDepartment);
+                        }
+
+                        if(workers[i].EmployeePosition == EmployeePosition.Employee)
+                        {
+                            var employee = new Employee(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = AddWorker(employee, pathToDepartment);
+                        }
+
+                        if(workers[i].EmployeePosition == EmployeePosition.Supervisor)
+                        {
+                            var supervisor = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            key = AddDeleteSupervisor(supervisor, pathToDepartment);
+                        }
+                    }
+                }
+
+                return key;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Получить список всех работников департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         public BindingList<Worker> GetListOfAllWorkersDepartment(string pathToDepartment)
