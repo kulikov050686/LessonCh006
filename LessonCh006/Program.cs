@@ -197,10 +197,41 @@ namespace LessonCh006
             #endregion
 
             #endregion
-            
+
             Print(ministry);
             Console.ReadKey();
 
+
+            #region Удаление департамента
+
+            ministry.DeleteDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_0");
+
+            #endregion
+
+            Print(ministry);
+            Console.ReadKey();
+            Console.Clear();
+
+            #region Добавление Сотрудников
+
+            ministry.AddEmployee("Василий", "Пупкин", 33, 2112, "Программист", "Департамент_3/Департамент_3_1");
+            ministry.AddIntern("Иван", "Задов", 21, 500, "Помощник программиста", "Департамент_3/Департамент_3_1");
+
+            #endregion
+
+            Print(ministry);
+            Console.ReadKey();
+
+            #region Удаление сотрудников
+
+            ministry.DeleteEmployee("Василий", "Пупкин", 33, 2112, "Программист", "Департамент_3/Департамент_3_1");
+            ministry.DeleteIntern("Иван", "Задов", 21, 500, "Помощник программиста", "Департамент_3/Департамент_3_1");
+
+            #endregion
+
+            Print(ministry);
+            Console.ReadKey();
+            Console.Clear();
 
         }
     }

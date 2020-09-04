@@ -16,8 +16,23 @@
         Employee = 1,
 
         /// <summary>
-        /// Руководитель
+        /// Руководитель департамента
         /// </summary>
-        Supervisor = 2
+        Supervisor = 2,
+
+        /// <summary>
+        /// Генеральный директор
+        /// </summary>
+        GeneralDirector = 3,
+
+        /// <summary>
+        /// Главный бухгалтер
+        /// </summary>
+        ChiefAccountant = 4,
+
+        /// <summary>
+        /// Заместитель генерального директора
+        /// </summary>
+        DeputyDirector = 5
     }
 }

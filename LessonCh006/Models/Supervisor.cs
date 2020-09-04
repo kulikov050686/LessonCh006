@@ -93,14 +93,14 @@ namespace Models
         /// <param name="age"> Возраст </param>
         /// <param name="salary"> Зарплата </param>
         /// <param name="jobTitle"> Название должности </param>
-        public Supervisor(string name, string surname, long age, double salary, string jobTitle)
+        public Supervisor(string name, string surname, long age, double salary, string jobTitle, EmployeePosition employeePosition = EmployeePosition.Supervisor)
         {            
             Name = name;
             Surname = surname;
             Age = age;
             Salary = salary;
             JobTitle = jobTitle;
-            EmployeePosition = EmployeePosition.Supervisor;
+            EmployeePosition = employeePosition;
         }
     }
 }

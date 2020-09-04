@@ -61,7 +61,8 @@ namespace Controllers
 
             if(base.DeleteDepartment(pathToDepartment))
             {
-                СalculateSalary();
+                pathToDepartment = ShortenPath(pathToDepartment);
+                СalculateSalary(pathToDepartment);
                 return true;
             }
 
@@ -76,7 +77,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddGeneralDirector(string name, string surname, long age)
         {
-            GeneralDirector = new Supervisor(name, surname, age, minSalary, "Генеральный директор");            
+            GeneralDirector = new Supervisor(name, surname, age, minSalary, "Генеральный директор", EmployeePosition.GeneralDirector);            
             СalculateSalary();            
         }
 
@@ -100,7 +101,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddChiefAccountant(string name, string surname, long age)
         {
-            ChiefAccountant = new Supervisor(name, surname, age, minSalary, "Главный бухгалтер");
+            ChiefAccountant = new Supervisor(name, surname, age, minSalary, "Главный бухгалтер", EmployeePosition.ChiefAccountant);            
             СalculateSalary();            
         }
 
@@ -124,7 +125,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public void AddDeputyDirector(string name, string surname, long age)
         {
-            DeputyDirector = new Supervisor(name, surname, age, minSalary, "Заместитель генерального директора");
+            DeputyDirector = new Supervisor(name, surname, age, minSalary, "Заместитель генерального директора", EmployeePosition.DeputyDirector);            
             СalculateSalary();                      
         }
 
@@ -362,21 +363,21 @@ namespace Controllers
                     {
                         key = false;
 
-                        if(workers[i].JobTitle == "Генеральный директор")
+                        if(workers[i].EmployeePosition == EmployeePosition.GeneralDirector)
                         {
-                            GeneralDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            GeneralDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle, workers[i].EmployeePosition);
                             key = true;
                         }
 
-                        if(workers[i].JobTitle == "Главный бухгалтер")
+                        if(workers[i].EmployeePosition == EmployeePosition.ChiefAccountant)
                         {
-                            ChiefAccountant = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            ChiefAccountant = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle, workers[i].EmployeePosition);
                             key = true;
                         }
 
-                        if(workers[i].JobTitle == "Заместитель генерального директора")
+                        if(workers[i].EmployeePosition == EmployeePosition.DeputyDirector)
                         {
-                            DeputyDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle);
+                            DeputyDirector = new Supervisor(workers[i].Name, workers[i].Surname, workers[i].Age, workers[i].Salary, workers[i].JobTitle, workers[i].EmployeePosition);
                             key = true;
                         }
                     }
@@ -526,6 +527,8 @@ namespace Controllers
         {
             if (Departments != null)
             {
+                totalSalary = 0;
+
                 for (int i = 0; i < Departments.Count; i++)
                 {
                     totalSalary += TotalSalaryOfAllEmployeesDepartment(Departments[i], true);

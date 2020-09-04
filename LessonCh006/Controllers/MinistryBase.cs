@@ -238,19 +238,19 @@ namespace Controllers
                     {
                         if (Departments[numberDepartments].Workers != null)
                         {
-                            int numberIntern = -1;
+                            int numberWorker = -1;
 
                             for (int i = 0; i < Departments[numberDepartments].Workers.Count; i++)
                             {
-                                if(Departments[numberDepartments].Workers[i] == worker)
+                                if(Equals(Departments[numberDepartments].Workers[i], worker))
                                 {
-                                    numberIntern = i;
+                                    numberWorker = i;
                                 }
                             }
 
-                            if(numberIntern > -1)
+                            if(numberWorker > -1)
                             {
-                                Departments[numberDepartments].Workers.RemoveAt(numberIntern);
+                                Departments[numberDepartments].Workers.RemoveAt(numberWorker);
                                 return true;
                             }                            
                         }
@@ -355,10 +355,30 @@ namespace Controllers
             return null;            
         }
 
+        /// <summary>
+        /// Определяет равны ли объекты друг другу
+        /// </summary>
+        /// <param name="worker_1"> Первый объект </param>
+        /// <param name="worker_2"> Второй объект </param>        
+        public bool Equals(IWorker worker_1, IWorker worker_2)
+        {
+            if(worker_1 != null && worker_2 != null)
+            {
+                return (worker_1.Name == worker_2.Name) &&
+                       (worker_1.Surname == worker_2.Surname) &&
+                       (worker_1.Age == worker_2.Age) &&
+                       (worker_1.Salary == worker_2.Salary) &&
+                       (worker_1.JobTitle == worker_2.JobTitle) &&
+                       (worker_1.EmployeePosition == worker_2.EmployeePosition);
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Закрытые методы
-               
+
         /// <summary>
         /// Поиск родительского департамента и добавление поддепартамента
         /// </summary>
@@ -525,7 +545,7 @@ namespace Controllers
 
                     for(int i = 0; i < department.Workers.Count; i++)
                     {
-                        if(department.Workers[i] == worker)
+                        if(Equals(department.Workers[i], worker))
                         {
                             k = i;                           
                             break;
@@ -716,7 +736,7 @@ namespace Controllers
 
             return -1;        
         }
-
+        
         #endregion
     }
 }
