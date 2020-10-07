@@ -36,7 +36,7 @@ namespace Models
         /// <summary>
         /// Лист сотрудников департамента
         /// </summary>
-        public List<IWorker> Workers { get; set; }
+        public List<BaseWorker> Workers { get; set; }
 
         /// <summary>
         /// Лист поддепартаментов

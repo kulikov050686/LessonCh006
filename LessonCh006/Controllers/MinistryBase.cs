@@ -43,17 +43,17 @@ namespace Controllers
         /// <summary>
         /// Генеральный директор
         /// </summary>
-        protected Supervisor GeneralDirector { get; set; }
+        protected GeneralDirector GeneralDirector { get; set; }
 
         /// <summary>
         /// Главный бухгалтер
         /// </summary>
-        protected Supervisor ChiefAccountant { get; set; }
+        protected ChiefAccountant ChiefAccountant { get; set; }
 
         /// <summary>
         /// Заместитель генерального директора
         /// </summary>
-        protected Supervisor DeputyDirector { get; set; }
+        protected DeputyDirector DeputyDirector { get; set; }
 
         #endregion
 
@@ -157,27 +157,24 @@ namespace Controllers
         /// <param name="supervisor"> Руководитель департамента </param>
         /// <param name="pathToDepartment"> Путь до депортамента </param>
         protected bool AddDeleteSupervisor(Supervisor supervisor, string pathToDepartment)
-        {            
-            if(!string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
-                int numberDepartments = SearchNumber(NameDepartment);
+        {
+            string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
+            int numberDepartments = SearchNumber(NameDepartment);
 
-                if(numberDepartments > -1)
+            if (numberDepartments > -1)
+            {
+                if (ShortenPath(pathToDepartment).Length == 0)
                 {
-                    if (ShortenPath(pathToDepartment).Length == 0)
+                    Departments[numberDepartments].Supervisor = supervisor;
+                    return true;
+                }
+                else
+                {
+                    if (DepartmentSearchAndAddingDeleteSupervisor(pathToDepartment, supervisor, Departments[numberDepartments]))
                     {
-                        Departments[numberDepartments].Supervisor = supervisor;
-                        return true;                        
+                        return true;
                     }
-                    else
-                    {
-                        if (DepartmentSearchAndAddingDeleteSupervisor(pathToDepartment, supervisor, Departments[numberDepartments]))
-                        {
-                            return true;
-                        }                        
-                    }
-                }                              
+                }
             }
 
             return false;
@@ -188,9 +185,9 @@ namespace Controllers
         /// </summary>
         /// <param name="pathToDepartment"> Путь до депортамента </param>
         /// <param name="worker"> Работник </param>      
-        protected bool AddWorker(IWorker worker, string pathToDepartment)
+        protected bool AddWorker(BaseWorker worker, string pathToDepartment)
         {            
-            if (worker != null && !string.IsNullOrWhiteSpace(pathToDepartment))
+            if (worker != null)
             {
                 string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
                 int numberDepartments = SearchNumber(NameDepartment);
@@ -201,7 +198,7 @@ namespace Controllers
                     {
                         if (Departments[numberDepartments].Workers == null)
                         {
-                            Departments[numberDepartments].Workers = new List<IWorker>();
+                            Departments[numberDepartments].Workers = new List<BaseWorker>();
                         }
 
                         Departments[numberDepartments].Workers.Add(worker);
@@ -225,9 +222,9 @@ namespace Controllers
         /// </summary>
         /// <param name="pathToDepartment"> Путь до депортамента </param>
         /// <param name="worker"> Работник </param>        
-        protected bool DeleteWorker(IWorker worker, string pathToDepartment)
+        protected bool DeleteWorker(BaseWorker worker, string pathToDepartment)
         {
-            if (worker != null && !string.IsNullOrWhiteSpace(pathToDepartment))
+            if (worker != null)
             {
                 string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
                 int numberDepartments = SearchNumber(NameDepartment);
@@ -269,16 +266,62 @@ namespace Controllers
         }
 
         /// <summary>
+        /// Получить работника по идентификатору
+        /// </summary>
+        /// <param name="id"> Идентификатор </param>        
+        protected BaseWorker GetWorkerById(int id)
+        {
+            if(id > 0)
+            {
+                if(GeneralDirector != null)
+                {
+                    if(GeneralDirector.Id == id)
+                    {
+                        return GeneralDirector;
+                    }
+                }
+
+                if(ChiefAccountant != null)
+                {
+                    if(ChiefAccountant.Id == id)
+                    {
+                        return ChiefAccountant;
+                    }
+                }
+
+                if(DeputyDirector != null)
+                {
+                    if(DeputyDirector.Id == id)
+                    {
+                        return DeputyDirector;
+                    }
+                }
+
+                if(Departments != null)
+                {
+                    BaseWorker baseWorker;
+
+                    for(int i = 0; i < Departments.Count; i++)
+                    {
+                        baseWorker = WorkerSearchByIdAndGetData(Departments[i], id);
+
+                        if(baseWorker != null)
+                        {
+                            return baseWorker;
+                        }
+                    }
+                }
+            }
+
+            return null;
+        }
+
+        /// <summary>
         /// Получить данные дапартамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         protected Department GetDepartment(string pathToDepartment)
         {
-            if (string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
-            }
-
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameDepartment);
 
@@ -303,11 +346,6 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         protected Supervisor GetSupervisorOfDepartment(string pathToDepartment)
         {
-            if (string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
-            }
-
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameDepartment);
 
@@ -330,13 +368,8 @@ namespace Controllers
         /// Получить лист с данными работников департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
-        protected List<IWorker> GetWorkersOfDepartment(string pathToDepartment)
+        protected List<BaseWorker> GetWorkersOfDepartment(string pathToDepartment)
         {
-            if (string.IsNullOrWhiteSpace(pathToDepartment))
-            {
-                throw new ArgumentNullException("Путь до департамента не может быть пустым!!!");
-            }
-
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameDepartment);
 
@@ -359,12 +392,13 @@ namespace Controllers
         /// Определяет равны ли объекты друг другу
         /// </summary>
         /// <param name="worker_1"> Первый объект </param>
-        /// <param name="worker_2"> Второй объект </param>        
-        public bool Equals(IWorker worker_1, IWorker worker_2)
+        /// <param name="worker_2"> Второй объект </param>
+        public bool Equals(BaseWorker worker_1, BaseWorker worker_2)
         {
             if(worker_1 != null && worker_2 != null)
             {
-                return (worker_1.Name == worker_2.Name) &&
+                return (worker_1.Id == worker_2.Id) && 
+                       (worker_1.Name == worker_2.Name) &&
                        (worker_1.Surname == worker_2.Surname) &&
                        (worker_1.Age == worker_2.Age) &&
                        (worker_1.Salary == worker_2.Salary) &&
@@ -499,7 +533,7 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         /// <param name="intern"> Интерн </param>
         /// <param name="department"> Текущий департамент </param>        
-        private bool DepartmentSearchAndAddingWorker(string pathToDepartment, IWorker worker, Department department)
+        private bool DepartmentSearchAndAddingWorker(string pathToDepartment, BaseWorker worker, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             pathToDepartment = ShortenPath(pathToDepartment);
@@ -508,7 +542,7 @@ namespace Controllers
             {
                 if(department.Workers == null)
                 {
-                    department.Workers = new List<IWorker>();
+                    department.Workers = new List<BaseWorker>();
                 }
 
                 department.Workers.Add(worker);
@@ -532,7 +566,7 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         /// <param name="worker"> Работник </param>
         /// <param name="department"> Текущий департамент </param>
-        private bool DepartmentSearchAndDeleteWorker(string pathToDepartment, IWorker worker, Department department)
+        private bool DepartmentSearchAndDeleteWorker(string pathToDepartment, BaseWorker worker, Department department)
         {            
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             pathToDepartment = ShortenPath(pathToDepartment);
@@ -630,7 +664,7 @@ namespace Controllers
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>
         /// <param name="department"> Текущий департамент </param>        
-        private List<IWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
+        private List<BaseWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             pathToDepartment = ShortenPath(pathToDepartment);
@@ -649,7 +683,48 @@ namespace Controllers
             }
 
             return null;
-        }       
+        }
+
+        /// <summary>
+        /// Поиск работника по идентификатору и получение данных 
+        /// </summary>
+        /// <param name="department"></param>
+        /// <param name="id"></param>        
+        private BaseWorker WorkerSearchByIdAndGetData(Department department, int id)
+        {
+            if (department.NextDepartments == null)
+            {
+                if(department.Supervisor != null)
+                {
+                    if(department.Supervisor.Id == id)
+                    {
+                        return department.Supervisor;
+                    }
+                }
+
+                for(int i = 0; i < department.CountWorkers; i++)
+                {
+                    if(department.Workers[i].Id == id)
+                    {
+                        return department.Workers[i];
+                    }
+                }
+            }
+            else 
+            {
+                for(int i = 0; i < department.CountDepartments; i++)
+                {
+                    BaseWorker baseWorker = WorkerSearchByIdAndGetData(department.NextDepartments[i], id);
+
+                    if (baseWorker != null)
+                    {
+                        return baseWorker;
+                    }
+                }
+            }
+
+            return null;
+        }
 
         /// <summary>
         /// Сократить путь с начала

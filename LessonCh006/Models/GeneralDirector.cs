@@ -1,25 +1,25 @@
 ﻿namespace Models
 {
     /// <summary>
-    /// Штатный сотрудник
+    /// Генеральный директор
     /// </summary>
-    public class Employee : BaseWorker
+    public class GeneralDirector : BaseWorker
     {
         /// <summary>
-        /// Конструктор штатного сотрудника
-        /// </summary>        
+        /// Конструктор генерального директора
+        /// </summary>
         /// <param name="name"> Имя </param>
         /// <param name="surname"> Фамилия </param>
         /// <param name="age"> Возраст </param>
         /// <param name="salary"> Зарплата </param>
         /// <param name="jobTitle"> Название должности </param>
-        public Employee(string name, string surname, long age, double salary, string jobTitle) : base(name, surname, age, salary, jobTitle)
+        public GeneralDirector(string name, string surname, long age, double salary, string jobTitle) : base(name, surname, age, salary, jobTitle)
         {
-            EmployeePosition = EmployeePosition.Employee;
+            EmployeePosition = EmployeePosition.GeneralDirector;
         }
 
         /// <summary>
-        /// Конструктор штатного сотрудника
+        /// Конструктор генерального директора
         /// </summary>
         /// <param name="id"> Идентификатор </param>
         /// <param name="name"> Имя </param>
@@ -27,9 +27,9 @@
         /// <param name="age"> Возраст </param>
         /// <param name="salary"> Зарплата </param>
         /// <param name="jobTitle"> Название должности </param>
-        public Employee(int id, string name, string surname, long age, double salary, string jobTitle) : base(id, name, surname, age, salary, jobTitle)
+        public GeneralDirector(int id, string name, string surname, long age, double salary, string jobTitle) : base(id, name, surname, age, salary, jobTitle)
         {
-            EmployeePosition = EmployeePosition.Employee;
+            EmployeePosition = EmployeePosition.GeneralDirector;
         }
     }
 }
