@@ -1,5 +1,7 @@
 ﻿using Models;
 using Services;
+using System.ComponentModel;
+using System.Threading.Tasks;
 
 namespace Controllers
 {
@@ -8,9 +10,7 @@ namespace Controllers
     /// </summary>
     public class Company : Ministry
     {
-        #region Закрытые поля
-
-        DataBase dataBase;
+        #region Закрытые поля       
 
         #endregion
 
@@ -21,8 +21,7 @@ namespace Controllers
         /// </summary>
         /// <param name="nameCompany"> Название Компании </param>
         public Company(string nameCompany) : base(nameCompany)
-        {
-            dataBase = new DataBase(@"Data Source=(LocalDB)\MSSQLLocalDB;AttachDbFilename=C:\MyDocument\Visual C#\LessonCh006\LessonCh006\WorkerDataBase.mdf;Integrated Security=True");
+        {            
         }
 
         #endregion
@@ -37,9 +36,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddGeneralDirector(string name, string surname, long age)
         {
-            base.AddGeneralDirector(name, surname, age);
-
-            dataBase.AddWorkerToDataBase(new Worker(GeneralDirector, null));
+            
         }
 
         /// <summary>
@@ -50,9 +47,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddChiefAccountant(string name, string surname, long age)
         {
-            base.AddChiefAccountant(name, surname, age);
-
-            dataBase.AddWorkerToDataBase(new Worker(ChiefAccountant, null));
+            
         }
 
         /// <summary>
@@ -63,9 +58,7 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddDeputyDirector(string name, string surname, long age)
         {
-            base.AddDeputyDirector(name, surname, age);
-
-            dataBase.AddWorkerToDataBase(new Worker(DeputyDirector, null));
+            
         }
 
         /// <summary>
@@ -78,12 +71,6 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public new bool AddSupervisorDepartment(string name, string surname, long age, string jobTitle, string pathToDepartment)
         {
-            if(base.AddSupervisorDepartment(name, surname, age, jobTitle, pathToDepartment))
-            {
-                dataBase.AddWorkerToDataBase(new Worker(GetSupervisorOfDepartment(pathToDepartment), pathToDepartment));
-                return true;
-            }
-
             return false;
         }
 
@@ -98,12 +85,6 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public new bool AddIntern(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
-            if(base.AddIntern(name, surname, age, salary, jobTitle, pathToDepartment))
-            {
-                dataBase.AddWorkerToDataBase(new Worker(name, surname, age, salary, jobTitle, EmployeePosition.Intern, pathToDepartment));
-                return true;
-            }
-
             return false;
         }
 
@@ -118,13 +99,35 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         public new bool AddEmployee(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
-            if(base.AddEmployee(name, surname, age, salary, jobTitle, pathToDepartment))
-            {
-                dataBase.AddWorkerToDataBase(new Worker(name, surname, age, salary, jobTitle, EmployeePosition.Employee, pathToDepartment));
-                return true;
-            }
-
             return false;
+        }
+
+        #endregion
+
+        #region Закрытые методы
+
+        /// <summary>
+        /// Сохранить лист работников в файл
+        /// </summary>
+        /// <param name="paht"> Путь </param>
+        private async void SaveListWorkersToFile(string paht)
+        {
+            await Task.Run(() => 
+            {
+                BindingList<Worker> WorkersList = GetListOfAllWorkers();
+                FileIOService.SaveAsJSON(paht, WorkersList); 
+            });           
+        }
+
+        /// <summary>
+        /// Загрузить список работников из файла
+        /// </summary>
+        /// <param name="path"> Путь </param>
+        private void LoadWorkerListFromFile(string path)
+        {
+            BindingList<Worker> WorkersList = FileIOService.OpenAsJSON(path);
+
+            SetListOfAllWorkers(WorkersList);
         }
 
         #endregion
