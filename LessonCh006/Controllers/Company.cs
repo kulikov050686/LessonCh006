@@ -1,7 +1,6 @@
 ﻿using Models;
 using Services;
 using System.ComponentModel;
-using System.Threading.Tasks;
 
 namespace Controllers
 {
@@ -12,6 +11,9 @@ namespace Controllers
     {
         #region Закрытые поля       
 
+        BindingList<Worker> workersList;
+        string path;
+
         #endregion
 
         #region Конструктор
@@ -21,7 +23,9 @@ namespace Controllers
         /// </summary>
         /// <param name="nameCompany"> Название Компании </param>
         public Company(string nameCompany) : base(nameCompany)
-        {            
+        {
+            path = NameMinistry + ".json";
+            LoadWorkerListFromFile(path);
         }
 
         #endregion
@@ -36,7 +40,17 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddGeneralDirector(string name, string surname, long age)
         {
-            
+            base.AddGeneralDirector(name, surname, age);
+            SaveListWorkersToFile(path);
+        }
+
+        /// <summary>
+        /// Удалить генерального директора
+        /// </summary>
+        public new void DeleteGeneralDirector()
+        {
+            base.DeleteGeneralDirector();
+            SaveListWorkersToFile(path);
         }
 
         /// <summary>
@@ -47,7 +61,17 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddChiefAccountant(string name, string surname, long age)
         {
-            
+            base.AddChiefAccountant(name, surname, age);
+            SaveListWorkersToFile(path);
+        }
+
+        /// <summary>
+        /// Удалить главного бухгалтера
+        /// </summary>
+        public new void DeleteChiefAccountant()
+        {
+            base.DeleteChiefAccountant();
+            SaveListWorkersToFile(path);
         }
 
         /// <summary>
@@ -58,7 +82,17 @@ namespace Controllers
         /// <param name="age"> Возраст </param>
         public new void AddDeputyDirector(string name, string surname, long age)
         {
-            
+            base.AddDeputyDirector(name, surname, age);
+            SaveListWorkersToFile(path);
+        }
+
+        /// <summary>
+        /// Удалить заместителя генерального директора
+        /// </summary>
+        public new void DeleteDeputyDirector()
+        {
+            base.DeleteDeputyDirector();
+            SaveListWorkersToFile(path);
         }
 
         /// <summary>
@@ -71,6 +105,27 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public new bool AddSupervisorDepartment(string name, string surname, long age, string jobTitle, string pathToDepartment)
         {
+            if(base.AddSupervisorDepartment(name, surname, age, jobTitle, pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Удалить руководителя департамента
+        /// </summary>
+        /// <param name="pathToDepartment"> Путь до департамента </param>
+        public new bool DeleteSupervisorDepartment(string pathToDepartment)
+        {
+            if(base.DeleteSupervisorDepartment(pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;
+            }
+
             return false;
         }
 
@@ -85,6 +140,33 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>
         public new bool AddIntern(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if(base.AddIntern(name, surname, age, salary, jobTitle, pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Удалить интерна из департамента
+        /// </summary>
+        /// <param name="id"> Идентификатор </param>
+        /// <param name="name"> Имя </param>
+        /// <param name="surname"> Фамилия </param>
+        /// <param name="age"> Возраст </param>
+        /// <param name="salary"> зарплата </param>
+        /// <param name="jobTitle"> Название занимаемой должности </param>
+        /// <param name="pathToDepartment"> Путь до департамента </param>
+        public new bool DeleteIntern(int id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
+        {
+            if(base.DeleteIntern(id, name, surname, age, salary, jobTitle, pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;                
+            }
+
             return false;
         }
 
@@ -99,6 +181,33 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         public new bool AddEmployee(string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
+            if(base.AddEmployee(name, surname, age, salary, jobTitle, pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;
+            }
+
+            return false;
+        }
+
+        /// <summary>
+        /// Удалить сотрудника из департамента
+        /// </summary>
+        /// <param name="id"> Идентификатор </param>
+        /// <param name="name"> Имя </param>
+        /// <param name="surname"> Фамилия </param>
+        /// <param name="age"> Возраст </param>
+        /// <param name="salary"> Зарплата </param>
+        /// <param name="jobTitle"> Название занимаемой должности</param>
+        /// <param name="pathToDepartment"> Путь до департамента </param>
+        public new bool DeleteEmployee(int id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
+        {
+            if(base.DeleteEmployee(id, name, surname, age, salary, jobTitle, pathToDepartment))
+            {
+                SaveListWorkersToFile(path);
+                return true;
+            }
+
             return false;
         }
 
@@ -110,13 +219,10 @@ namespace Controllers
         /// Сохранить лист работников в файл
         /// </summary>
         /// <param name="paht"> Путь </param>
-        private async void SaveListWorkersToFile(string paht)
+        private void SaveListWorkersToFile(string paht)
         {
-            await Task.Run(() => 
-            {
-                BindingList<Worker> WorkersList = GetListOfAllWorkers();
-                FileIOService.SaveAsJSON(paht, WorkersList); 
-            });           
+            RefreshListOfWorkers();
+            FileIOService.SaveAsJSON(paht, workersList); 
         }
 
         /// <summary>
@@ -125,9 +231,16 @@ namespace Controllers
         /// <param name="path"> Путь </param>
         private void LoadWorkerListFromFile(string path)
         {
-            BindingList<Worker> WorkersList = FileIOService.OpenAsJSON(path);
+            workersList = FileIOService.OpenAsJSON(path);
+            SetListOfAllWorkers(workersList);            
+        }
 
-            SetListOfAllWorkers(WorkersList);
+        /// <summary>
+        /// Обновить список работников компании
+        /// </summary>
+        private void RefreshListOfWorkers()
+        {
+            workersList = GetListOfAllWorkers();
         }
 
         #endregion

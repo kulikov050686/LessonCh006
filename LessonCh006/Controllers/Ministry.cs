@@ -220,6 +220,7 @@ namespace Controllers
         /// <summary>
         /// Удалить интерна из департамента
         /// </summary>
+        /// <param name="id"> Идентификатор </param>
         /// <param name="name"> Имя </param>
         /// <param name="surname"> Фамилия </param>
         /// <param name="age"> Возраст </param>
@@ -274,6 +275,7 @@ namespace Controllers
         /// <summary>
         /// Удалить сотрудника из департамента
         /// </summary>
+        /// <param name="id"> Идентификатор </param>
         /// <param name="name"> Имя </param>
         /// <param name="surname"> Фамилия </param>
         /// <param name="age"> Возраст </param>
@@ -453,10 +455,35 @@ namespace Controllers
             return null;
         }
 
+        /// <summary>
+        /// Поиск работника
+        /// </summary>
+        /// <param name="worker"> Работник </param>        
+        public bool WorkerSearch(Worker worker)
+        {
+            if(worker != null)
+            {
+                BindingList<Worker> workers = GetListOfAllWorkers();
+
+                if (workers != null)
+                {
+                    for (int i = 0; i < workers.Count; i++)
+                    {
+                        if (worker.Equals(workers[i]))
+                        {
+                            return true;
+                        }
+                    }
+                }
+            }
+
+            return false;
+        }
+
         #endregion
 
         #region Закрытые методы
-        
+
         /// <summary>
         /// Общая заработная плата всех сотрудников департамента и поддепартаментов
         /// </summary>

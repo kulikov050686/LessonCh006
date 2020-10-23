@@ -17,7 +17,7 @@ namespace Services
         /// <param name="listSave"> Сохраняемый лист </param>
         public static void SaveAsJSON(string PathFile, BindingList<Worker> listSave)
         {
-            using (StreamWriter writer = File.CreateText(PathFile))
+            using (StreamWriter writer = new StreamWriter(PathFile, false))
             {
                 string output = JsonConvert.SerializeObject(listSave, Formatting.Indented);
                 writer.Write(output);

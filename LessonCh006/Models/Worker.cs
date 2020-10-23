@@ -1,4 +1,6 @@
-﻿namespace Models
+﻿using Newtonsoft.Json;
+
+namespace Models
 {
     /// <summary>
     /// Работник
@@ -44,7 +46,7 @@
         /// Путь до департамента
         /// </summary>
         public string PathToDepartment { get; set; }
-        
+
         /// <summary>
         /// Конструктор
         /// </summary>
@@ -94,6 +96,7 @@
         /// <param name="jobTitle"> Название занимаемой должности </param>
         /// <param name="employeePosition"> Статус </param>
         /// <param name="pathToDepartment"> Путь до департамента работника </param>
+        [JsonConstructor]
         public Worker(int id, string name, string surname, long age, double salary, string jobTitle, EmployeePosition employeePosition, string pathToDepartment) 
         {            
             Id = id;
@@ -104,6 +107,26 @@
             JobTitle = jobTitle;
             EmployeePosition = employeePosition;
             PathToDepartment = pathToDepartment;
+        }
+
+        /// <summary>
+        /// Определяет равны ли объекты друг другу
+        /// </summary>
+        public bool Equals(Worker worker)
+        {
+            if(worker != null)
+            {
+                return (worker.Id == Id) &&
+                       (worker.Name == Name) &&
+                       (worker.Surname == Surname) &&
+                       (worker.Age == Age) &&
+                       (worker.Salary == Salary) &&
+                       (worker.JobTitle == JobTitle) &&
+                       (worker.EmployeePosition == EmployeePosition) && 
+                       (worker.PathToDepartment == PathToDepartment);
+            }
+
+            return false;
         }
     }
 }

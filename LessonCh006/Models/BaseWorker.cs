@@ -162,5 +162,24 @@ namespace Models
             Salary = salary;
             JobTitle = jobTitle;
         }
+
+        /// <summary>
+        /// Определяет равны ли объекты друг другу
+        /// </summary>        
+        public bool Equals(BaseWorker worker)
+        {
+            if(worker != null)
+            {
+                return (worker.Id == Id) &&
+                       (worker.Name == Name) &&
+                       (worker.Surname == Surname) &&
+                       (worker.Age == Age) &&
+                       (worker.Salary == Salary) &&
+                       (worker.JobTitle == JobTitle) &&
+                       (worker.EmployeePosition == EmployeePosition);
+            }
+
+            return false;
+        }
     }
 }
