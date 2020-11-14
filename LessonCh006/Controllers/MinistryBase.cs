@@ -38,7 +38,7 @@ namespace Controllers
         /// <summary>
         /// Список департаментов первого уровня
         /// </summary>
-        protected List<Department> Departments { get; private set; }
+        public List<Department> Departments { get; private set; }
 
         /// <summary>
         /// Генеральный директор
@@ -269,7 +269,7 @@ namespace Controllers
         /// Получить работника по идентификатору
         /// </summary>
         /// <param name="id"> Идентификатор </param>        
-        protected BaseWorker GetWorkerById(int id)
+        protected BaseWorker GetWorkerById(ulong id)
         {
             if(id > 0)
             {

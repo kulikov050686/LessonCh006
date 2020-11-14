@@ -7,7 +7,7 @@ namespace Models
     /// </summary>
     public abstract class BaseWorker
     {
-        int id;
+        ulong id;
         string name;
         string surname;
         long age;
@@ -17,7 +17,7 @@ namespace Models
         /// <summary>
         /// Идентификатор
         /// </summary>
-        public int Id
+        public ulong Id
         { 
             get => id;
 
@@ -153,7 +153,7 @@ namespace Models
         /// <param name="age"> Возраст </param>
         /// <param name="salary"> Зарплата </param>
         /// <param name="jobTitle"> Название должности </param>
-        public BaseWorker(int id, string name, string surname, long age, double salary, string jobTitle)
+        public BaseWorker(ulong id, string name, string surname, long age, double salary, string jobTitle)
         {
             Id = id;
             Name = name;

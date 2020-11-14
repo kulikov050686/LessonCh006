@@ -227,7 +227,7 @@ namespace Controllers
         /// <param name="salary"> зарплата </param>
         /// <param name="jobTitle"> Название занимаемой должности </param>
         /// <param name="pathToDepartment"> Путь до департамента </param>
-        public bool DeleteIntern(int id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
+        public bool DeleteIntern(ulong id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {
@@ -282,7 +282,7 @@ namespace Controllers
         /// <param name="salary"> Зарплата </param>
         /// <param name="jobTitle"> Название занимаемой должности</param>
         /// <param name="pathToDepartment"> Путь до департамента </param>
-        public bool DeleteEmployee(int id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
+        public bool DeleteEmployee(ulong id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
             if (string.IsNullOrWhiteSpace(pathToDepartment))
             {

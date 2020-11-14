@@ -159,7 +159,7 @@ namespace Controllers
         /// <param name="salary"> зарплата </param>
         /// <param name="jobTitle"> Название занимаемой должности </param>
         /// <param name="pathToDepartment"> Путь до департамента </param>
-        public new bool DeleteIntern(int id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
+        public new bool DeleteIntern(ulong id, string name, string surname, long age, double salary, string jobTitle, string pathToDepartment)
         {
             if(base.DeleteIntern(id, name, surname, age, salary, jobTitle, pathToDepartment))
             {
