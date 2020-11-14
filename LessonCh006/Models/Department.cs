@@ -8,14 +8,14 @@ namespace Models
     /// </summary>
     public class Department
     {        
-        string nameDepartment;        
+        string _NameDepartment;        
 
         /// <summary>
         /// Название департамента
         /// </summary>
         public string NameDepartment
         { 
-            get => nameDepartment;
+            get => _NameDepartment;
             
             set
             {
@@ -24,7 +24,7 @@ namespace Models
                     throw new ArgumentNullException("Название департамента не может быть пустым!!!");
                 }
 
-                nameDepartment = value;
+                _NameDepartment = value;
             }
         }
 
@@ -36,12 +36,12 @@ namespace Models
         /// <summary>
         /// Лист сотрудников департамента
         /// </summary>
-        public IList<BaseWorker> Workers { get; set; }
+        public List<BaseWorker> Workers { get; set; }
 
         /// <summary>
         /// Лист поддепартаментов
         /// </summary>
-        public IList<Department> NextDepartments { get; set; } 
+        public List<Department> NextDepartments { get; set; } 
         
         /// <summary>
         /// Количество поддепартаментов в данном департаменте
