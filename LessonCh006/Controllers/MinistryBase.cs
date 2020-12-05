@@ -78,8 +78,8 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         protected void AddDepartment(string pathToDepartment)
         {
-            string Path = pathToDepartment;
             string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
+            string Path = ParentDepartment;
             pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (Departments == null)
@@ -484,6 +484,7 @@ namespace Controllers
         private void DepartmentSearchAndAdding(string pathToDepartment, Department department, string path)
         {
             string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
+            path += "/" + ParentDepartment;
             pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NextDepartments == null)

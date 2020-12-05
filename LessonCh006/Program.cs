@@ -29,20 +29,21 @@ namespace LessonCh006
 
             #region Создание департаментов 
 
-            //company.AddDepartment("Департамент_0");
-            //company.AddDepartment("Департамент_1");
-            //company.AddDepartment("Департамент_2");
-            //company.AddDepartment("Департамент_3");
-            //company.AddDepartment("Департамент_4"); 
-            //company.AddDepartment("Департамент_5");
+            company.AddDepartment("Департамент_0");
+            company.AddDepartment("Департамент_1");
+            company.AddDepartment("Департамент_2");
+            company.AddDepartment("Департамент_3");
+            company.AddDepartment("Департамент_4");
+            company.AddDepartment("Департамент_5");
 
-            //company.AddDepartment("Департамент_3/Департамент_3_0");
-            //company.AddDepartment("Департамент_3/Департамент_3_1");
+            company.AddDepartment("Департамент_1/Департамент_1_0");
+            company.AddDepartment("Департамент_1/Департамент_1_1");
 
-            //company.AddDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_0");
-            //company.AddDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_1");
+            company.AddDepartment("Департамент_2/Департамент_2_0/Департамент_2_0_0");
+            company.AddDepartment("Департамент_2/Департамент_2_1/Департамент_2_1_0");
 
-
+            company.AddDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_0/Департамент_3_0_0_0");
+            company.AddDepartment("Департамент_3/Департамент_3_1/Департамент_3_1_0/Департамент_3_1_0_0");
 
             #endregion
 
