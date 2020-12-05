@@ -64,7 +64,7 @@ namespace Controllers
 
             if(base.DeleteDepartment(pathToDepartment))
             {
-                pathToDepartment = ShortenPath(pathToDepartment);
+                pathToDepartment = CutPathFromEnd(pathToDepartment);
                 СalculateSalary(pathToDepartment);
                 return true;
             }
@@ -538,7 +538,7 @@ namespace Controllers
                     }
                 }
 
-                pathToDepartment = ShortenPath(pathToDepartment);
+                pathToDepartment = CutPathFromEnd(pathToDepartment);
 
                 if (pathToDepartment.Length != 0)
                 {
@@ -625,39 +625,6 @@ namespace Controllers
                     GeneralDirector.Salary = _MinSalary;
                 }
             }
-        }
-
-        /// <summary>
-        /// Сократить путь с конца
-        /// </summary>
-        /// <param name="path"> Путь к родителю </param>
-        private string ShortenPath(string path)
-        {
-            if(path[path.Length - 1] == '/')
-            {
-                path = path.Substring(0, path.Length - 1);
-            }
-
-            int temp = 0;
-
-            for(int i = path.Length - 1; i >= 0; i--)
-            {
-                if(path[i] != '/')
-                {
-                    temp++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if (temp == path.Length)
-            {
-                return "";
-            }
-
-            return path.Substring(0, path.Length - (++temp));
         }
 
         /// <summary>

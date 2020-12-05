@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.ComponentModel;
 using Models;
 
 namespace Controllers
@@ -11,7 +12,7 @@ namespace Controllers
     {
         #region Закрытые поля
 
-        private string _NameMinistry;        
+        private string _nameMinistry;        
         
         #endregion
 
@@ -22,7 +23,7 @@ namespace Controllers
         /// </summary>
         public string NameMinistry
         {
-            get => _NameMinistry;
+            get => _nameMinistry;
 
             private set
             {
@@ -31,14 +32,14 @@ namespace Controllers
                     throw new ArgumentNullException("Название министерства не может быть пустым!!!");
                 }
 
-                _NameMinistry = value;
+                _nameMinistry = value;
             }
         }
 
         /// <summary>
         /// Список департаментов первого уровня
         /// </summary>
-        public List<Department> Departments { get; private set; }
+        public BindingList<Department> Departments { get; private set; }
 
         /// <summary>
         /// Генеральный директор
@@ -78,21 +79,22 @@ namespace Controllers
         /// <param name="pathToDepartment"> Путь до департамента </param>        
         protected void AddDepartment(string pathToDepartment)
         {
+            string Path = pathToDepartment;
             string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (Departments == null)
             {
                 if(pathToDepartment.Length == 0)
                 {
-                    Departments = new List<Department>();                    
-                    Departments.Add(new Department(ParentDepartment));
+                    Departments = new BindingList<Department>();                    
+                    Departments.Add(new Department(ParentDepartment, Path));
                     return;                    
                 }
                 else
                 {
-                    Departments = new List<Department>();
-                    Departments.Add(new Department(ParentDepartment));
+                    Departments = new BindingList<Department>();
+                    Departments.Add(new Department(ParentDepartment, Path));
                 }                
             }
             else
@@ -101,7 +103,7 @@ namespace Controllers
                 {
                     if (SearchNumber(ParentDepartment) == -1)
                     {
-                        Departments.Add(new Department(ParentDepartment));
+                        Departments.Add(new Department(ParentDepartment, Path));
                         return;                        
                     }
 
@@ -111,12 +113,12 @@ namespace Controllers
                 {
                     if (SearchNumber(ParentDepartment) == -1)
                     {
-                        Departments.Add(new Department(ParentDepartment));                        
+                        Departments.Add(new Department(ParentDepartment, Path));                        
                     }
                 }                 
             }
 
-            DepartmentSearchAndAdding(pathToDepartment, Departments[SearchNumber(ParentDepartment)]);
+            DepartmentSearchAndAdding(pathToDepartment, Departments[SearchNumber(ParentDepartment)], Path);
         }
 
         /// <summary>
@@ -128,7 +130,7 @@ namespace Controllers
             if (Departments != null)
             {
                 string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-                pathToDepartment = ShortenPath(pathToDepartment);
+                pathToDepartment = CutPathFromBeginning(pathToDepartment);
                 int numberDepartments = SearchNumber(ParentDepartment);
 
                 if (pathToDepartment.Length == 0)
@@ -163,7 +165,7 @@ namespace Controllers
 
             if (numberDepartments > -1)
             {
-                if (ShortenPath(pathToDepartment).Length == 0)
+                if (CutPathFromBeginning(pathToDepartment).Length == 0)
                 {
                     Departments[numberDepartments].Supervisor = supervisor;
                     return true;
@@ -194,11 +196,11 @@ namespace Controllers
 
                 if (numberDepartments > -1) 
                 {
-                    if (ShortenPath(pathToDepartment).Length == 0)
+                    if (CutPathFromBeginning(pathToDepartment).Length == 0)
                     {
                         if (Departments[numberDepartments].Workers == null)
                         {
-                            Departments[numberDepartments].Workers = new List<BaseWorker>();
+                            Departments[numberDepartments].Workers = new BindingList<BaseWorker>();
                         }
 
                         Departments[numberDepartments].Workers.Add(worker);
@@ -231,7 +233,7 @@ namespace Controllers
 
                 if(numberDepartments > -1)
                 {
-                    if (ShortenPath(pathToDepartment).Length == 0)
+                    if (CutPathFromBeginning(pathToDepartment).Length == 0)
                     {
                         if (Departments[numberDepartments].Workers != null)
                         {
@@ -327,7 +329,7 @@ namespace Controllers
 
             if (numberDepartments > -1)
             {
-                if (ShortenPath(pathToDepartment).Length == 0)
+                if (CutPathFromBeginning(pathToDepartment).Length == 0)
                 {
                     return Departments[numberDepartments];
                 }
@@ -351,7 +353,7 @@ namespace Controllers
 
             if (numberDepartments > -1)
             {
-                if (ShortenPath(pathToDepartment).Length == 0)
+                if (CutPathFromBeginning(pathToDepartment).Length == 0)
                 {
                     return Departments[numberDepartments].Supervisor;
                 }
@@ -368,14 +370,14 @@ namespace Controllers
         /// Получить лист с данными работников департамента
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>        
-        protected List<BaseWorker> GetWorkersOfDepartment(string pathToDepartment)
+        protected BindingList<BaseWorker> GetWorkersOfDepartment(string pathToDepartment)
         {
             string NameDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameDepartment);
 
             if (numberDepartments > -1)
             {
-                if (ShortenPath(pathToDepartment).Length == 0)
+                if (CutPathFromBeginning(pathToDepartment).Length == 0)
                 {
                     return Departments[numberDepartments].Workers;
                 }
@@ -386,6 +388,67 @@ namespace Controllers
             }
 
             return null;            
+        }
+
+        /// <summary>
+        /// Обрезать путь с начала
+        /// </summary>
+        /// <param name="path"> Путь </param>
+        protected string CutPathFromBeginning(string path)
+        {
+            int temp = 0;
+
+            for (int i = 0; i < path.Length; i++)
+            {
+                if (path[i] != '/')
+                {
+                    temp++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (temp == path.Length)
+            {
+                return "";
+            }
+
+            return path.Substring(++temp);
+        }
+
+        /// <summary>
+        /// Обрезать путь с конца
+        /// </summary>
+        /// <param name="path"> Путь </param>        
+        protected string CutPathFromEnd(string path)
+        {
+            if (path[path.Length - 1] == '/')
+            {
+                path = path.Substring(0, path.Length - 1);
+            }
+
+            int temp = 0;
+
+            for (int i = path.Length - 1; i >= 0; i--)
+            {
+                if (path[i] != '/')
+                {
+                    temp++;
+                }
+                else
+                {
+                    break;
+                }
+            }
+
+            if (temp == path.Length)
+            {
+                return "";
+            }
+
+            return path.Substring(0, path.Length - (++temp));
         }
 
         /// <summary>
@@ -419,23 +482,23 @@ namespace Controllers
         /// <param name="pathToParentDepartment"> Путь до родительского департамента </param>
         /// <param name="nameDepartment"> Название добавляемого поддепартамента </param>
         /// <param name="department"> Родительский департамент </param>        
-        private void DepartmentSearchAndAdding(string pathToDepartment, Department department)
+        private void DepartmentSearchAndAdding(string pathToDepartment, Department department, string path)
         {
             string ParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NextDepartments == null)
             {
                 if (pathToDepartment.Length == 0)
                 {
-                    department.NextDepartments = new List<Department>();
-                    department.NextDepartments.Add(new Department(ParentDepartment));
+                    department.NextDepartments = new BindingList<Department>();
+                    department.NextDepartments.Add(new Department(ParentDepartment, path));
                 }
                 else
                 {
-                    department.NextDepartments = new List<Department>();
-                    department.NextDepartments.Add(new Department(ParentDepartment));
-                    DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[0]);
+                    department.NextDepartments = new BindingList<Department>();
+                    department.NextDepartments.Add(new Department(ParentDepartment, path));
+                    DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[0], path);
                 }
             }
             else
@@ -446,20 +509,20 @@ namespace Controllers
                 {
                     if (numberDepartments == -1)
                     {
-                        department.NextDepartments.Add(new Department(ParentDepartment));
+                        department.NextDepartments.Add(new Department(ParentDepartment, path));
                     }
                 }
                 else
                 {
                     if (numberDepartments == -1)
                     {
-                        department.NextDepartments.Add(new Department(ParentDepartment));
+                        department.NextDepartments.Add(new Department(ParentDepartment, path));
                         numberDepartments = SearchNumber(ParentDepartment, department);
-                        DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[numberDepartments]);
+                        DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[numberDepartments], path);
                     }
                     else
                     {
-                        DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[numberDepartments]);
+                        DepartmentSearchAndAdding(pathToDepartment, department.NextDepartments[numberDepartments], path);
                     }
                 }
             }            
@@ -475,7 +538,7 @@ namespace Controllers
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameParentDepartment, department);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (numberDepartments > -1)
             {
@@ -508,7 +571,7 @@ namespace Controllers
         private bool DepartmentSearchAndAddingDeleteSupervisor(string pathToDepartment, Supervisor supervisor, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {
@@ -536,13 +599,13 @@ namespace Controllers
         private bool DepartmentSearchAndAddingWorker(string pathToDepartment, BaseWorker worker, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {
                 if(department.Workers == null)
                 {
-                    department.Workers = new List<BaseWorker>();
+                    department.Workers = new BindingList<BaseWorker>();
                 }
 
                 department.Workers.Add(worker);
@@ -569,7 +632,7 @@ namespace Controllers
         private bool DepartmentSearchAndDeleteWorker(string pathToDepartment, BaseWorker worker, Department department)
         {            
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {
@@ -615,7 +678,7 @@ namespace Controllers
         private Department DepartmentSearchAndGet(string pathToDepartment, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {
@@ -641,14 +704,14 @@ namespace Controllers
         private Supervisor DepartmentSearchAndGetSupervisor(string pathToDepartment, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {                
                 return department.Supervisor;
             }
 
-            NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);            
+            NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameParentDepartment, department);
 
             if (numberDepartments > -1)
@@ -664,17 +727,17 @@ namespace Controllers
         /// </summary>
         /// <param name="pathToDepartment"> Путь до департамента </param>
         /// <param name="department"> Текущий департамент </param>        
-        private List<BaseWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
+        private BindingList<BaseWorker> DepartmentSearchAndGetWorkers(string pathToDepartment, Department department)
         {
             string NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
-            pathToDepartment = ShortenPath(pathToDepartment);
+            pathToDepartment = CutPathFromBeginning(pathToDepartment);
 
             if (department.NameDepartment == NameParentDepartment && pathToDepartment.Length == 0)
             {
                 return department.Workers;
             }
 
-            NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);            
+            NameParentDepartment = NameOfCurrentDepartment(pathToDepartment);
             int numberDepartments = SearchNumber(NameParentDepartment, department);
             
             if (numberDepartments > -1)
@@ -725,35 +788,7 @@ namespace Controllers
 
             return null;
         }
-
-        /// <summary>
-        /// Сократить путь с начала
-        /// </summary>
-        /// <param name="path"> Путь </param>
-        private string ShortenPath(string path)
-        {
-            int temp = 0;
-
-            for(int i = 0; i < path.Length; i++)
-            {
-                if(path[i] != '/')
-                {                    
-                    temp++;
-                }
-                else
-                {
-                    break;
-                }
-            }
-
-            if(temp == path.Length)
-            {
-                return "";
-            }
-
-            return path.Substring(++temp);
-        }
-
+        
         /// <summary>
         /// Название текущего департамента
         /// </summary>
@@ -809,7 +844,7 @@ namespace Controllers
                 }
             }
 
-            return -1;        
+            return -1;
         }
         
         #endregion

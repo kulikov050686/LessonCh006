@@ -1,5 +1,5 @@
 ﻿using System;
-using System.Collections.Generic;
+using System.ComponentModel;
 
 namespace Models
 {
@@ -8,14 +8,14 @@ namespace Models
     /// </summary>
     public class Department
     {        
-        string _NameDepartment;        
+        string _nameDepartment;        
 
         /// <summary>
         /// Название департамента
         /// </summary>
         public string NameDepartment
         { 
-            get => _NameDepartment;
+            get => _nameDepartment;
             
             set
             {
@@ -24,7 +24,7 @@ namespace Models
                     throw new ArgumentNullException("Название департамента не может быть пустым!!!");
                 }
 
-                _NameDepartment = value;
+                _nameDepartment = value;
             }
         }
 
@@ -36,12 +36,12 @@ namespace Models
         /// <summary>
         /// Лист сотрудников департамента
         /// </summary>
-        public List<BaseWorker> Workers { get; set; }
+        public BindingList<BaseWorker> Workers { get; set; }
 
         /// <summary>
         /// Лист поддепартаментов
         /// </summary>
-        public List<Department> NextDepartments { get; set; } 
+        public BindingList<Department> NextDepartments { get; set; } 
         
         /// <summary>
         /// Количество поддепартаментов в данном департаменте
@@ -90,9 +90,10 @@ namespace Models
         /// </summary>
         /// <param name="nameDepartment"> Название департамента </param>
         /// <param name="id"> Идентификатор департамента </param>
-        public Department(string nameDepartment)
+        public Department(string nameDepartment, string path)
         {
-            NameDepartment = nameDepartment;                     
+            NameDepartment = nameDepartment;
+            Path = path;
         }
     }
 }

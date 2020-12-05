@@ -33,12 +33,16 @@ namespace LessonCh006
             //company.AddDepartment("Департамент_1");
             //company.AddDepartment("Департамент_2");
             //company.AddDepartment("Департамент_3");
+            //company.AddDepartment("Департамент_4"); 
+            //company.AddDepartment("Департамент_5");
 
             //company.AddDepartment("Департамент_3/Департамент_3_0");
             //company.AddDepartment("Департамент_3/Департамент_3_1");
 
             //company.AddDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_0");
             //company.AddDepartment("Департамент_3/Департамент_3_0/Департамент_3_0_1");
+
+
 
             #endregion
 
@@ -76,7 +80,7 @@ namespace LessonCh006
             //company.DeleteEmployee(0, "Семён", "Самохин", 37, 1000, "Программист", "Департамент_3/Департамент_3_0/Департамент_3_0_0");
 
             #endregion
-                        
+
             Console.ReadKey();
         }
     }

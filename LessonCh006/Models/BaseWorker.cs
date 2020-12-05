@@ -7,11 +7,11 @@ namespace Models
     /// </summary>
     public abstract class BaseWorker
     {        
-        string _Name;
-        string _Surname;
-        long _Age;
-        double _Salary;
-        string _JobTitle;
+        string _name;
+        string _surname;
+        long _age;
+        double _salary;
+        string _jobTitle;
 
         /// <summary>
         /// Идентификатор
@@ -23,7 +23,7 @@ namespace Models
         /// </summary>
         public string Name
         {
-            get => _Name;
+            get => _name;
 
             set
             {
@@ -32,7 +32,7 @@ namespace Models
                     throw new ArgumentNullException("Имя не может быть пустым!!!");
                 }
 
-                _Name = value;
+                _name = value;
             }
         }
 
@@ -41,7 +41,7 @@ namespace Models
         /// </summary>
         public string Surname
         {
-            get => _Surname;
+            get => _surname;
 
             set
             {
@@ -50,7 +50,7 @@ namespace Models
                     throw new ArgumentNullException("Фамилия не может быть пустой!!!");
                 }
 
-                _Surname = value;
+                _surname = value;
             }
         }
 
@@ -59,7 +59,7 @@ namespace Models
         /// </summary>
         public long Age
         {
-            get => _Age;
+            get => _age;
 
             set
             {
@@ -68,7 +68,7 @@ namespace Models
                     throw new ArgumentException("Невозможный возраст!!!");
                 }
 
-                _Age = value;
+                _age = value;
             }
         }
 
@@ -77,7 +77,7 @@ namespace Models
         /// </summary>
         public double Salary
         {
-            get => _Salary;
+            get => _salary;
 
             set
             {
@@ -86,7 +86,7 @@ namespace Models
                     throw new ArgumentException("Невозможная зарплата!!!");
                 }
 
-                _Salary = value;
+                _salary = value;
             }
         }
 
@@ -95,7 +95,7 @@ namespace Models
         /// </summary>
         public string JobTitle
         {
-            get => _JobTitle;
+            get => _jobTitle;
 
             set
             {
@@ -104,7 +104,7 @@ namespace Models
                     throw new ArgumentNullException("Название должности не может быть пустым!!!");
                 }
 
-                _JobTitle = value;
+                _jobTitle = value;
             }
         }
 
