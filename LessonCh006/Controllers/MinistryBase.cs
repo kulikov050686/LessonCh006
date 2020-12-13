@@ -43,17 +43,17 @@ namespace Controllers
         /// <summary>
         /// Генеральный директор
         /// </summary>
-        protected GeneralDirector GeneralDirector { get; set; }
+        public GeneralDirector GeneralDirector { get; set; }
 
         /// <summary>
         /// Главный бухгалтер
         /// </summary>
-        protected ChiefAccountant ChiefAccountant { get; set; }
+        public ChiefAccountant ChiefAccountant { get; set; }
 
         /// <summary>
         /// Заместитель генерального директора
         /// </summary>
-        protected DeputyDirector DeputyDirector { get; set; }
+        public DeputyDirector DeputyDirector { get; set; }
 
         #endregion
 
@@ -449,7 +449,7 @@ namespace Controllers
 
             return path.Substring(0, path.Length - (++temp));
         }
-
+        
         /// <summary>
         /// Определяет равны ли объекты друг другу
         /// </summary>
